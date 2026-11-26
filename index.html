@@ -133,7 +133,7 @@
 
         <div class="p-6 sm:p-8">
           <p class="text-sm text-slate-600 mb-6 pb-5 border-b border-stone-100 leading-relaxed">
-            Preencha os campos abaixo para receber uma <strong class="text-oxford-900">sugestão de Pergunta-Problema, Objetivo Geral e 3 Objetivos Específicos</strong>, pensada para o prazo do seu curso. É um ponto de partida para você revisar com o seu orientador.
+            Envie o edital do programa e o seu tema para receber, na hora, um <strong class="text-oxford-900">resumo do que o edital exige do projeto e uma sugestão de Pergunta-Problema, Objetivo Geral e 3 Objetivos Específicos</strong> que seguem essas regras. É um ponto de partida para você revisar com o seu orientador.
           </p>
 
           <form id="leadForm" class="space-y-5">
@@ -169,6 +169,14 @@
               <input type="text" id="contato" name="contato" maxlength="160" required placeholder="(00) 90000-0000 ou pesquisador@email.com" class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2.5 text-sm text-oxford-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-oxford-900 focus:border-oxford-900 transition" />
             </div>
 
+            <div>
+              <label for="edital" class="block font-mono text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                05. Edital do Programa (PDF, até 10 MB)
+              </label>
+              <input type="file" id="edital" name="edital" accept="application/pdf,.pdf" required class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2 text-sm text-oxford-900 file:mr-3 file:rounded-md file:border-0 file:bg-oxford-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white focus:outline-none focus:ring-2 focus:ring-oxford-900 transition" />
+              <p class="mt-1.5 text-xs text-slate-500">Se o edital for muito longo, envie só as páginas sobre o projeto de pesquisa e as linhas de pesquisa.</p>
+            </div>
+
             <!-- Anti-spam (honeypot): humanos não veem este campo -->
             <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" aria-hidden="true" />
 
@@ -178,7 +186,7 @@
             </label>
 
             <button type="submit" class="w-full bg-oxford-900 hover:bg-oxford-800 text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-3 text-base cursor-pointer group">
-              <span>Gerar Minha Matriz Lógica Grátis</span>
+              <span>Gerar Minha Estrutura Grátis</span>
               <span class="text-amber-400 group-hover:translate-x-1 transition-transform">➔</span>
             </button>
           </form>
@@ -189,9 +197,20 @@
               <span class="text-lg">✓</span>
               <div>
                 <p class="font-bold text-emerald-900 mb-1">Pedido recebido!</p>
+                <p id="fallbackNota" class="text-emerald-800 leading-relaxed mb-1 hidden">Nosso gerador automático está indisponível neste momento, então sua estrutura será feita pela nossa equipe.</p>
                 <p class="text-emerald-800 leading-relaxed">Registramos seu pedido para <span id="resNivel" class="font-semibold"></span> na área de <span id="resArea" class="font-semibold"></span>. Vamos enviar sua estrutura inicial pelo contato informado em até 48 horas. Você também entrou na lista de espera e será avisado quando os passes completos forem lançados.</p>
               </div>
             </div>
+          </div>
+
+          <!-- Resultado gerado -->
+          <div id="resultado" class="hidden mt-6 rounded-xl border border-stone-200 bg-[#FAF9F6] p-5 sm:p-6 text-sm text-oxford-900" aria-live="polite">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <h3 class="font-serif text-xl font-bold">Sua estrutura inicial</h3>
+              <button type="button" id="btnCopiar" class="rounded-lg border border-oxford-900 px-3 py-1.5 text-xs font-semibold hover:bg-oxford-900 hover:text-white transition">Copiar texto</button>
+            </div>
+            <div id="resultadoConteudo" class="space-y-5 leading-relaxed"></div>
+            <p class="mt-5 pt-4 border-t border-stone-200 text-xs text-slate-500">Gerado por IA a partir do edital e do tema que você enviou. Confira cada regra no texto original do edital e revise a estrutura com o seu futuro orientador antes de usar. Você também entrou na lista de espera dos passes completos.</p>
           </div>
 
           <!-- Mensagem de Erro -->
@@ -439,7 +458,7 @@
           <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
         </summary>
         <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
-          Ao preencher o formulário no topo da página, você recebe gratuitamente uma sugestão de estrutura inicial: pergunta-problema, objetivo geral e 3 objetivos específicos, pensados para o prazo de 24 (Mestrado) ou 48 meses (Doutorado). Ela é gerada só a partir do tema que você informou, sem os seus PDFs, então serve como ponto de partida, não como versão final.
+          Ao preencher o formulário no topo da página, você recebe na hora, gratuitamente, um resumo do que o edital exige do projeto (limite de páginas, seções, formatação, linhas de pesquisa) e uma sugestão de estrutura inicial: delimitação, pergunta-problema, objetivo geral e 3 objetivos específicos, pensados para o prazo de 24 (Mestrado) ou 48 meses (Doutorado). A estrutura é gerada por IA a partir do edital e do seu tema, sem leitura de artigos, então serve como ponto de partida, não como versão final. São até 3 estruturas por dia por pessoa.
         </p>
       </details>
       <details class="group bg-white border border-stone-200 rounded-xl p-5">
@@ -471,50 +490,137 @@
     </div>
   </footer>
 
-  <!-- Script de Envio do Formulário (Supabase + Formspree) -->
+  <!-- Script de Envio do Formulário (gerador + Supabase + Formspree) -->
   <script>
   {
-    // ====== CONFIGURAÇÃO — preencha com os dados das suas contas ======
     const CONFIG = {
       SUPABASE_URL: 'https://nomnxrazjypvulmtunjo.supabase.co',
       SUPABASE_ANON_KEY: 'sb_publishable_ywC3iAIskK6wpTCMebZDxQ_sS67BSPL', // chave pública (publishable): só consegue INSERIR leads
-      FORMSPREE_ID: 'mppdnzvq'                         // https://formspree.io/f/mppdnzvq
+      FORMSPREE_ID: 'mppdnzvq'
     };
-    // ==================================================================
+    const FUNCAO_URL = CONFIG.SUPABASE_URL + '/functions/v1/gerar-estrutura';
+    const MAX_PDF = 10 * 1024 * 1024;
 
-    const ok = v => v && !v.startsWith('COLE_AQUI');
     const form = document.getElementById('leadForm');
     const btn = form.querySelector('button[type="submit"]');
     const btnOriginal = btn.innerHTML;
     const errBox = document.getElementById('errorMessage');
+    const painel = document.getElementById('resultado');
+    const conteudo = document.getElementById('resultadoConteudo');
+    let textoParaCopiar = '';
 
-    function enviarSupabase(dados) {
-      if (!ok(CONFIG.SUPABASE_URL) || !ok(CONFIG.SUPABASE_ANON_KEY)) return Promise.reject(new Error('Supabase não configurado'));
-      return fetch(CONFIG.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/leads', {
-        method: 'POST',
-        headers: {
-          'apikey': CONFIG.SUPABASE_ANON_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(dados)
-      }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error('Supabase ' + r.status + ': ' + t); }); });
+    function el(tag, cls, txt) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (txt != null) e.textContent = String(txt);
+      return e;
+    }
+    const temValor = v => v != null && String(v).trim() !== '' && String(v).toLowerCase() !== 'null';
+    const lista = v => Array.isArray(v) ? v.filter(temValor) : [];
+
+    function bloco(titulo, corpo) {
+      const sec = el('section');
+      sec.appendChild(el('h4', 'font-mono text-[11px] font-semibold uppercase tracking-wider text-brass-700 mb-1.5', titulo));
+      if (Array.isArray(corpo)) {
+        const ul = el('ul', 'list-disc pl-5 space-y-1');
+        corpo.forEach(i => ul.appendChild(el('li', '', i)));
+        sec.appendChild(ul);
+      } else {
+        sec.appendChild(el('p', '', corpo));
+      }
+      return sec;
     }
 
-    function enviarFormspree(dados, gotcha) {
-      if (!ok(CONFIG.FORMSPREE_ID)) return Promise.reject(new Error('Formspree não configurado'));
+    function mostrarResultado(edital, est, dados) {
+      conteudo.innerHTML = '';
+      const linhas = [];
+      const ed = edital || {};
+      const caixaEdital = el('div', 'rounded-lg bg-white border border-stone-200 p-4 space-y-3');
+      caixaEdital.appendChild(el('p', 'font-semibold', 'O que o edital exige do projeto' + (temValor(ed.programa) ? ' — ' + ed.programa : '')));
+      linhas.push('O QUE O EDITAL EXIGE' + (temValor(ed.programa) ? ' — ' + ed.programa : ''));
+      const itens = [
+        ['Limite de páginas', ed.limite_paginas],
+        ['Seções obrigatórias', lista(ed.secoes_obrigatorias)],
+        ['Formatação', ed.formatacao],
+        ['Avaliação cega / identificação', ed.avaliacao_cega],
+        ['Linhas de pesquisa', lista(ed.linhas_pesquisa)],
+        ['Outras exigências', lista(ed.outras_exigencias)]
+      ];
+      itens.forEach(([t, v]) => {
+        const vazio = Array.isArray(v) ? v.length === 0 : !temValor(v);
+        const valor = vazio ? 'Não informado no edital' : v;
+        caixaEdital.appendChild(bloco(t, valor));
+        linhas.push(t + ': ' + (Array.isArray(valor) ? valor.join('; ') : valor));
+      });
+      conteudo.appendChild(caixaEdital);
+
+      const e = est || {};
+      linhas.push('', 'ESTRUTURA INICIAL — ' + dados.nivel + ' em ' + dados.area);
+      if (temValor(e.linha_sugerida)) { conteudo.appendChild(bloco('Linha de pesquisa sugerida', e.linha_sugerida)); linhas.push('Linha de pesquisa sugerida: ' + e.linha_sugerida); }
+      [['1. Delimitação do tema', e.delimitacao], ['2. Pergunta-problema', e.pergunta], ['3. Objetivo geral', e.objetivo_geral]].forEach(([t, v]) => {
+        if (temValor(v)) { conteudo.appendChild(bloco(t, v)); linhas.push(t, v); }
+      });
+      const espec = Array.isArray(e.objetivos_especificos) ? e.objetivos_especificos : [];
+      if (espec.length) {
+        const textos = espec.map((o, i) => String.fromCharCode(97 + i) + ') ' + (o && o.texto ? o.texto : o) + (o && temValor(o.metodo) ? ' — sugestão de método: ' + o.metodo : ''));
+        conteudo.appendChild(bloco('4. Objetivos específicos', textos));
+        linhas.push('4. Objetivos específicos', ...textos);
+      }
+      if (temValor(e.ajustes_feitos)) { conteudo.appendChild(bloco('Ajustes feitos no seu tema', e.ajustes_feitos)); linhas.push('Ajustes feitos no seu tema: ' + e.ajustes_feitos); }
+      const pontos = lista(e.pontos_orientador);
+      if (pontos.length) { conteudo.appendChild(bloco('Pontos para conversar com o orientador', pontos)); linhas.push('Pontos para conversar com o orientador:', ...pontos.map(p => '- ' + p)); }
+      linhas.push('', 'Sugestão inicial gerada por IA a partir do edital e do tema informado. Confira as regras no edital original e revise com o seu futuro orientador.');
+      textoParaCopiar = linhas.join('\n');
+      painel.classList.remove('hidden');
+      painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('btnCopiar').addEventListener('click', async function () {
+      try { await navigator.clipboard.writeText(textoParaCopiar); this.textContent = 'Copiado ✓'; }
+      catch { this.textContent = 'Selecione e copie o texto'; }
+      setTimeout(() => { this.textContent = 'Copiar texto'; }, 2500);
+    });
+
+    function salvarLead(dados) {
+      return fetch(CONFIG.SUPABASE_URL + '/rest/v1/leads', {
+        method: 'POST',
+        headers: { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(dados)
+      }).then(r => { if (!r.ok) throw new Error('Supabase ' + r.status); });
+    }
+
+    function avisarFormspree(dados, extra) {
       return fetch('https://formspree.io/f/' + CONFIG.FORMSPREE_ID, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...dados, _gotcha: gotcha, _subject: 'Novo lead ProjetoAprovado: ' + dados.nivel + ' / ' + dados.area })
-      }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error('Formspree ' + r.status + ': ' + t); }); });
+        body: JSON.stringify({ ...dados, ...extra, _subject: 'Novo lead ProjetoAprovado: ' + dados.nivel + ' / ' + dados.area })
+      }).then(r => { if (!r.ok) throw new Error('Formspree ' + r.status); });
+    }
+
+    function erro(msg) {
+      errBox.textContent = msg;
+      errBox.classList.remove('hidden');
+      btn.disabled = false;
+      btn.innerHTML = btnOriginal;
+      btn.classList.remove('opacity-80');
+    }
+
+    function concluir(texto) {
+      btn.innerHTML = '<span>' + texto + '</span>';
+      btn.classList.remove('bg-oxford-900', 'hover:bg-oxford-800', 'opacity-80');
+      btn.classList.add('bg-emerald-700');
+      form.querySelectorAll('input, select, textarea').forEach(x => x.disabled = true);
     }
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       errBox.classList.add('hidden');
+      if (form.elements['_gotcha'].value) return;
 
-      const gotcha = form.elements['_gotcha'].value;
+      const arquivo = form.elements['edital'].files[0];
+      if (!arquivo) return erro('Anexe o PDF do edital.');
+      if (arquivo.size > MAX_PDF) return erro('O PDF passa de 10 MB. Envie só as páginas sobre o projeto de pesquisa.');
+
       const dados = {
         nivel: form.elements['nivel'].value,
         area: form.elements['area'].value.trim(),
@@ -526,30 +632,48 @@
       };
 
       btn.disabled = true;
-      btn.innerHTML = '<span>Enviando...</span>';
+      btn.innerHTML = '<span>Lendo o edital e montando sua estrutura… (até 1 minuto)</span>';
       btn.classList.add('opacity-80');
 
-      // Robô preencheu o campo oculto: finge sucesso e não grava nada
-      const resultados = gotcha
-        ? [{ status: 'fulfilled' }]
-        : await Promise.allSettled([enviarSupabase(dados), enviarFormspree(dados, gotcha)]);
+      const fd = new FormData();
+      ['nivel', 'area', 'tema', 'contato'].forEach(k => fd.append(k, dados[k]));
+      fd.append('consentimento', String(dados.consentimento));
+      fd.append('edital', arquivo, arquivo.name);
 
-      resultados.filter(r => r.status === 'rejected').forEach(r => console.warn(r.reason));
+      let status = 0, resposta = null;
+      try {
+        const r = await fetch(FUNCAO_URL, { method: 'POST', body: fd });
+        status = r.status;
+        resposta = await r.json().catch(() => null);
+      } catch (err) {
+        console.warn(err);
+      }
 
-      if (resultados.some(r => r.status === 'fulfilled')) {
+      if (resposta && resposta.ok) {
+        avisarFormspree(dados, { edital: arquivo.name, resultado: 'estrutura gerada automaticamente' }).catch(console.warn);
+        mostrarResultado(resposta.edital, resposta.estrutura, dados);
+        concluir('✓ Estrutura gerada');
+        return;
+      }
+
+      // Erros que a pessoa consegue corrigir (arquivo, campos, limite)
+      if (status >= 400 && status < 500 && resposta && resposta.motivo) return erro(resposta.motivo);
+
+      // Gerador indisponível: registra o pedido para envio manual em 48 h
+      const jaSalvo = status === 502 || status === 500; // a função já gravou o lead antes de falhar
+      const tarefas = [avisarFormspree(dados, { edital: arquivo.name, resultado: 'FALHA no gerador — enviar manualmente em 48h' })];
+      if (!jaSalvo) tarefas.push(salvarLead(dados));
+      const res = await Promise.allSettled(tarefas);
+      res.filter(r => r.status === 'rejected').forEach(r => console.warn(r.reason));
+
+      if (res.some(r => r.status === 'fulfilled') || jaSalvo) {
         document.getElementById('resNivel').textContent = dados.nivel;
         document.getElementById('resArea').textContent = dados.area;
+        document.getElementById('fallbackNota').classList.remove('hidden');
         document.getElementById('successMessage').classList.remove('hidden');
-        btn.innerHTML = '<span>✓ Matriz Solicitada</span>';
-        btn.classList.remove('bg-oxford-900', 'hover:bg-oxford-800', 'opacity-80');
-        btn.classList.add('bg-emerald-700');
-        form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+        concluir('✓ Pedido registrado');
       } else {
-        errBox.textContent = 'Não foi possível registrar seu protocolo agora. Verifique sua conexão e tente novamente em instantes.';
-        errBox.classList.remove('hidden');
-        btn.disabled = false;
-        btn.innerHTML = btnOriginal;
-        btn.classList.remove('opacity-80');
+        erro('Não foi possível registrar seu pedido agora. Verifique sua conexão e tente novamente em instantes.');
       }
     });
   }
