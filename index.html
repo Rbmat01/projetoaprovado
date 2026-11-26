@@ -65,7 +65,7 @@
   <!-- Barra Superior de Rigor Metodológico -->
   <div class="bg-oxford-900 text-slate-300 text-xs py-2 px-4 text-center border-b border-oxford-800">
     <span class="font-mono text-amber-400 mr-2">[ABNT NBR 15287]</span>
-    Alinhado aos critérios de avaliação das bancas de Pós-Graduação Stricto Sensu (CAPES)
+    Estrutura baseada na norma ABNT de projeto de pesquisa e nas regras do edital que você enviar
   </div>
 
   <!-- Navbar -->
@@ -111,11 +111,11 @@
 
       <!-- Título Editorial -->
       <h1 class="font-serif text-4xl sm:text-6xl font-bold text-oxford-900 tracking-tight leading-[1.12] mb-6">
-        Estruture seu Projeto de Pesquisa alinhado ao edital em <span class="italic text-brass-700 underline decoration-amber-300/80 decoration-2 underline-offset-4">um fim de semana</span>.
+        Saia da página em branco com um projeto de pesquisa <span class="italic text-brass-700 underline decoration-amber-300/80 decoration-2 underline-offset-4">bem amarrado</span> ao edital.
       </h1>
 
       <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed font-normal">
-        Saia da página em branco sem alucinações de IA. Construa sua <strong class="text-oxford-900 font-semibold">Matriz de Amarração Metodológica</strong>, embasada exclusivamente nos seus artigos em PDF e formatada nas normas da ABNT.
+        Construa sua <strong class="text-oxford-900 font-semibold">Matriz de Amarração Metodológica</strong> a partir dos artigos em PDF que você escolher, com cada citação ligada ao trecho de origem para você conferir, e formatação nas normas da ABNT. A pesquisa, as escolhas e a redação final continuam sendo suas.
       </p>
 
       <!-- Formulário Estilo "Ficha Catalográfica / Protocolo de Pesquisa" -->
@@ -133,7 +133,7 @@
 
         <div class="p-6 sm:p-8">
           <p class="text-sm text-slate-600 mb-6 pb-5 border-b border-stone-100 leading-relaxed">
-            Preencha os parâmetros abaixo para receber sua <strong class="text-oxford-900">Pergunta Problema + Objetivo Geral + 3 Objetivos Específicos</strong> calibrados para o tempo do seu programa.
+            Preencha os campos abaixo para receber uma <strong class="text-oxford-900">sugestão de Pergunta-Problema, Objetivo Geral e 3 Objetivos Específicos</strong>, pensada para o prazo do seu curso. É um ponto de partida para você revisar com o seu orientador.
           </p>
 
           <form id="leadForm" class="space-y-5">
@@ -174,7 +174,7 @@
 
             <label class="flex items-start gap-2.5 text-xs text-slate-600 leading-relaxed cursor-pointer">
               <input type="checkbox" id="consentimento" name="consentimento" required class="mt-0.5 w-4 h-4 accent-[#0F172A]" />
-              <span>Autorizo o uso destes dados para receber a minha Matriz e comunicações do ProjetoAprovado, nos termos da LGPD. Posso pedir a exclusão a qualquer momento.</span>
+              <span>Autorizo o uso destes dados para receber a minha Matriz e os avisos da lista de espera do ProjetoAprovado, nos termos da LGPD. Posso pedir a exclusão a qualquer momento.</span>
             </label>
 
             <button type="submit" class="w-full bg-oxford-900 hover:bg-oxford-800 text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-3 text-base cursor-pointer group">
@@ -188,8 +188,8 @@
             <div class="flex items-start gap-3">
               <span class="text-lg">✓</span>
               <div>
-                <p class="font-bold text-emerald-900 mb-1">Protocolo registrado com sucesso!</p>
-                <p class="text-emerald-800 leading-relaxed">Nosso motor metodológico já está cruzando o nível pretendido (<span id="resNivel" class="font-semibold"></span>) com a área de <span id="resArea" class="font-semibold"></span>. Você receberá sua Matriz de Amarração no contato informado em instantes.</p>
+                <p class="font-bold text-emerald-900 mb-1">Pedido recebido!</p>
+                <p class="text-emerald-800 leading-relaxed">Registramos seu pedido para <span id="resNivel" class="font-semibold"></span> na área de <span id="resArea" class="font-semibold"></span>. Vamos enviar sua estrutura inicial pelo contato informado em até 48 horas. Você também entrou na lista de espera e será avisado quando os passes completos forem lançados.</p>
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@
           <div id="errorMessage" class="hidden mt-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-sm" role="alert"></div>
 
           <div class="mt-5 pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-            <span class="flex items-center gap-1.5">🔒 Sigilo acadêmico absoluto (LGPD)</span>
+            <span class="flex items-center gap-1.5">🔒 Seus dados são usados só para enviar sua Matriz (LGPD)</span>
             <span class="font-mono">Sem compromisso • 100% Gratuito</span>
           </div>
         </div>
@@ -214,8 +214,9 @@
         Por que não usar o ChatGPT comum para escrever seu pré-projeto?
       </h2>
       <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
-        Chats genéricos inventam referências bibliográficas, ignoram o limite rígido de páginas dos editais e produzem textos superficiais que professores doutores identificam no primeiro parágrafo.
+        Chats genéricos podem inventar referências bibliográficas, não conhecem as regras do seu edital e tendem a produzir textos genéricos, que as bancas costumam perceber.
       </p>
+      <a href="#testar-gratis" class="inline-flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full text-xs font-semibold bg-brass-50 text-brass-700 border border-amber-300 hover:bg-brass-100 transition">Recursos em desenvolvimento • Entre na lista de espera →</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -229,7 +230,7 @@
         </div>
         <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Leitor de Edital Inteligente</h3>
         <p class="text-slate-600 text-sm leading-relaxed">
-          Faça upload do PDF do edital do PPG. O sistema extrai automaticamente o limite exato de páginas, seções obrigatórias, tipografia e regras de avaliação cega (sem identificação do autor).
+          Faça upload do PDF do edital do PPG. O sistema identifica o limite de páginas, as seções obrigatórias, a formatação e as regras de avaliação cega (sem identificação do autor), e mostra tudo para você conferir com o texto original.
         </p>
       </div>
 
@@ -243,7 +244,7 @@
         </div>
         <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Matriz de Amarração Lógica</h3>
         <p class="text-slate-600 text-sm leading-relaxed">
-          Conectamos cada Objetivo Específico a uma técnica real de coleta e análise de dados (ex: Bardin, Estatística Descritiva), garantindo o rigor metodológico exigido pelas bancas.
+          Conectamos cada Objetivo Específico a uma técnica real de coleta e análise de dados (ex: Bardin, Estatística Descritiva), para ajudar você a manter a coerência entre problema, objetivos e método.
         </p>
       </div>
 
@@ -255,9 +256,9 @@
           </div>
           <span class="font-mono text-xs text-slate-400">03 / FONTES REAIS</span>
         </div>
-        <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Zero Citações Inventadas</h3>
+        <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Citações Rastreáveis</h3>
         <p class="text-slate-600 text-sm leading-relaxed">
-          Suba seus artigos em PDF (SciELO, CAPES, Scopus). A justificativa e o referencial são construídos exclusivamente sobre seus arquivos, indicando autor, ano e página exata.
+          Suba seus artigos em PDF (SciELO, CAPES, Scopus). A justificativa e o referencial partem dos seus arquivos, e cada citação indica autor, ano e página para você verificar antes de usar.
         </p>
       </div>
     </div>
@@ -269,11 +270,12 @@
       <div class="text-center max-w-2xl mx-auto mb-16">
         <span class="font-mono text-xs font-semibold uppercase tracking-widest text-amber-400 block mb-3">Fluxo de Trabalho</span>
         <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4 leading-tight">
-          Do tema bruto ao arquivo Word na ABNT em 4 etapas
+          Do tema bruto a um rascunho em Word na ABNT, em 4 etapas
         </h2>
         <p class="text-slate-400 text-base">
           Um roteiro estruturado para você não perder semanas travado na página em branco.
         </p>
+        <a href="#testar-gratis" class="inline-flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/40 hover:bg-amber-400/20 transition">Plataforma em desenvolvimento • Entre na lista de espera →</a>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,7 +287,7 @@
           </div>
           <h3 class="font-serif text-xl font-bold text-white mb-2">Configure o Edital do Programa</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
-            Informe se é Mestrado (24m) ou Doutorado (48m) e anexe o edital do PPG para travar automaticamente o contador de páginas e a estrutura exigida.
+            Informe se é Mestrado (24m) ou Doutorado (48m) e anexe o edital do PPG para configurar o limite de páginas e a estrutura exigida.
           </p>
         </div>
 
@@ -309,7 +311,7 @@
           </div>
           <h3 class="font-serif text-xl font-bold text-white mb-2">Alimente o Referencial Teórico</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
-            Anexe de 5 a 15 artigos-chave da linha de pesquisa do seu futuro orientador. O sistema sintetiza os achados com citações diretas e indiretas rastreáveis.
+            Anexe de 5 a 15 artigos-chave da linha de pesquisa do seu futuro orientador. O sistema sintetiza os achados com citações diretas e indiretas que você pode conferir na fonte.
           </p>
         </div>
 
@@ -321,7 +323,7 @@
           </div>
           <h3 class="font-serif text-xl font-bold text-white mb-2">Exporte em Word Formatado</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
-            Baixe seu pré-projeto completo com cronograma de execução (24 ou 48 meses), margens 3x2 cm, espaçamento 1,5 e lista de referências gerada automaticamente.
+            Baixe o rascunho do seu pré-projeto com cronograma de execução (24 ou 48 meses), formatação ABNT (ou a do edital, quando for diferente) e lista de referências, pronto para a sua revisão final.
           </p>
         </div>
       </div>
@@ -336,7 +338,7 @@
         Passes por Processo Seletivo
       </h2>
       <p class="text-slate-600 text-base">
-        Você não precisa pagar mensalidade eterna. Escolha o passe ideal para a sua submissão atual.
+        Você não precisa pagar mensalidade eterna. Os passes ainda não estão à venda: entre na lista de espera para ser avisado do lançamento. Enquanto isso, peça a sua estrutura inicial gratuita.
       </p>
     </div>
 
@@ -353,7 +355,7 @@
           
           <div class="mb-6 pb-6 border-b border-stone-100">
             <span class="text-4xl font-bold text-oxford-900">R$ 97</span>
-            <span class="text-sm text-slate-500 ml-1">/ pagamento único</span>
+            <span class="text-sm text-slate-500 ml-1">/ pagamento único (30 dias de acesso)</span>
           </div>
 
           <ul class="space-y-3.5 text-sm text-slate-700 mb-8">
@@ -365,14 +367,14 @@
         </div>
 
         <a href="#testar-gratis" class="w-full block text-center py-3 px-5 rounded-xl border border-oxford-900 text-oxford-900 font-semibold text-sm hover:bg-oxford-900 hover:text-white transition">
-          Começar Testando Grátis
+          Entre na lista de espera
         </a>
       </div>
 
       <!-- Plano Múltiplos Editais -->
       <div class="bg-oxford-900 text-white rounded-2xl border-2 border-amber-500/60 p-8 flex flex-col justify-between shadow-xl relative">
         <div class="absolute -top-3.5 right-6 bg-amber-400 text-oxford-950 font-mono text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-          Mais Escolhido
+          Para vários editais
         </div>
 
         <div>
@@ -390,14 +392,14 @@
 
           <ul class="space-y-3.5 text-sm text-slate-200 mb-8">
             <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Leitura e adaptação para até 3 Editais</li>
-            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Matriz de Amarração + Cronograma CAPES</li>
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Matriz de Amarração + Cronograma de execução</li>
             <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Análise de até 40 artigos em PDF</li>
-            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Simulador de Arguição de Banca (Perguntas prováveis)</li>
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Simulador de Arguição (perguntas frequentes de banca)</li>
           </ul>
         </div>
 
         <a href="#testar-gratis" class="w-full block text-center py-3.5 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-oxford-950 font-bold text-sm transition shadow-md">
-          Gerar Espinha Dorsal Grátis Primeiro
+          Entre na lista de espera
         </a>
       </div>
     </div>
@@ -413,11 +415,11 @@
     <div class="space-y-4">
       <details class="group bg-white border border-stone-200 rounded-xl p-5">
         <summary class="flex items-center justify-between font-semibold text-oxford-900 cursor-pointer text-sm sm:text-base">
-          <span>O texto gerado passa em detectores de plágio e IA?</span>
+          <span>O texto gerado passa em detectores de plágio e de IA?</span>
           <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
         </summary>
         <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
-          Sim. Diferente de geradores automáticos de texto genérico, o ProjetoAprovado atua como um estruturador metodológico assistido: você fornece os artigos-base, valida a matriz lógica e edita a redação final. Todas as citações são devidamente referenciadas conforme a NBR 10520, eliminando risco de plágio.
+          Nenhuma ferramenta pode garantir isso, e os detectores de IA erram com frequência. O ProjetoAprovado é um estruturador metodológico: você fornece os artigos-base, valida a matriz e escreve ou reescreve a versão final com as suas palavras. As citações seguem a NBR 10520, o que reduz o risco de plágio, mas a revisão final e a autoria são suas. Consulte também as regras do seu programa sobre o uso de IA e informe o uso quando o edital pedir.
         </p>
       </details>
 
@@ -427,7 +429,7 @@
           <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
         </summary>
         <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
-          Sim. Como o sistema aprende a terminologia técnica a partir do edital do seu programa e dos artigos em PDF que você mesmo carrega, ele se adapta perfeitamente a pesquisas qualitativas, quantitativas ou mistas em qualquer grande área da CAPES.
+          Sim. Como o sistema aprende a terminologia técnica a partir do edital do seu programa e dos artigos em PDF que você mesmo carrega, ele pode ser usado em pesquisas qualitativas, quantitativas ou mistas de qualquer grande área da CAPES. Em áreas com convenções muito próprias, a orientação de um especialista continua indispensável.
         </p>
       </details>
 
@@ -437,7 +439,16 @@
           <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
         </summary>
         <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
-          Ao preencher o formulário no topo da página, você recebe gratuitamente a estrutura lógica inicial do seu projeto: delimitação do problema, pergunta norteadora, objetivo geral e 3 objetivos específicos alinhados ao prazo de 24 (Mestrado) ou 48 meses (Doutorado).
+          Ao preencher o formulário no topo da página, você recebe gratuitamente uma sugestão de estrutura inicial: pergunta-problema, objetivo geral e 3 objetivos específicos, pensados para o prazo de 24 (Mestrado) ou 48 meses (Doutorado). Ela é gerada só a partir do tema que você informou, sem os seus PDFs, então serve como ponto de partida, não como versão final.
+        </p>
+      </details>
+      <details class="group bg-white border border-stone-200 rounded-xl p-5">
+        <summary class="flex items-center justify-between font-semibold text-oxford-900 cursor-pointer text-sm sm:text-base">
+          <span>Usar o ProjetoAprovado garante minha aprovação?</span>
+          <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
+          Não. A aprovação depende da banca, do número de vagas, da afinidade com a linha de pesquisa, das outras etapas do processo seletivo e da qualidade do projeto final. A ferramenta ajuda a organizar e dar coerência ao seu projeto, mas não substitui o seu trabalho nem a conversa com o futuro orientador.
         </p>
       </details>
     </div>
@@ -455,7 +466,7 @@
         </span>
       </div>
       <p class="text-xs text-slate-500 text-center sm:text-right">
-        © 2026 ProjetoAprovado • Ferramenta de apoio metodológico à pesquisa científica.
+        © 2026 ProjetoAprovado • Ferramenta de apoio metodológico à pesquisa científica. Não garante aprovação em processos seletivos.
       </p>
     </div>
   </footer>
@@ -515,7 +526,7 @@
       };
 
       btn.disabled = true;
-      btn.innerHTML = '<span>Estruturando Matriz Lógica...</span>';
+      btn.innerHTML = '<span>Enviando...</span>';
       btn.classList.add('opacity-80');
 
       // Robô preencheu o campo oculto: finge sucesso e não grava nada
