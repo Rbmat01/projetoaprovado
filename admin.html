@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administração | ProjetoAprovado</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { background:#FAF9F6; color:#111827; font-family:"Plus Jakarta Sans",sans-serif; }
+    h1,h2 { font-family:"Newsreader",Georgia,serif; color:#0F172A; font-weight:700; }
+    .campo { border-radius:.5rem; background:#fff; border:1px solid #d6d3d1; padding:.55rem .75rem; font-size:.875rem; }
+    .btn { border-radius:.6rem; padding:.55rem 1rem; font-weight:600; font-size:.85rem; }
+    .btn-escuro { background:#0F172A; color:#fff; } .btn:disabled { opacity:.6; }
+    .num { font-family:"JetBrains Mono",monospace; font-variant-numeric:tabular-nums; }
+    table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    th { text-align:left; font-family:"JetBrains Mono",monospace; font-size:10px; text-transform:uppercase; color:#64748b; padding:.5rem; border-bottom:1px solid #e7e5e4; white-space:nowrap; }
+    td { padding:.5rem; border-bottom:1px solid #f1f0ee; vertical-align:top; }
+    .rolagem { overflow-x:auto; background:#fff; border:1px solid #e7e5e4; border-radius:.75rem; max-height:420px; overflow-y:auto; }
+  </style>
+</head>
+<body>
+  <header class="border-b border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <a href="./" class="font-bold text-lg" style="font-family:Newsreader,serif">Projeto<span class="italic text-amber-700">Aprovado</span> <span class="text-xs font-mono text-slate-500">admin</span></a>
+      <div class="flex items-center gap-3 text-sm"><span id="quem" class="text-slate-500"></span><button id="btnAtualizar" class="btn border border-stone-300 hidden">Atualizar</button><button id="btnSair" class="btn border border-stone-300 hidden">Sair</button></div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section id="telaLogin" class="hidden max-w-sm mx-auto">
+      <h1 class="text-3xl mb-2">Entrar no painel</h1>
+      <p class="text-sm text-slate-600 mb-4">Acesso restrito ao administrador.</p>
+      <form id="formLogin" class="flex gap-2"><input id="email" type="email" required class="campo flex-1" placeholder="seu e-mail" /><button class="btn btn-escuro">Enviar link</button></form>
+      <p id="msgLogin" class="text-sm mt-3"></p>
+    </section>
+
+    <p id="negado" class="hidden text-center text-slate-600">Esta conta não tem acesso ao painel.</p>
+
+    <section id="painel" class="hidden space-y-10">
+      <div>
+        <h1 class="text-3xl mb-1">Visão geral</h1>
+        <p class="text-sm text-slate-500">Gasto de IA estimado pelo preço do Claude Sonnet 5.5 (US$ 2 entrada / US$ 10 saída por milhão de tokens). Valores de "hoje" contam a partir da meia-noite de Brasília.</p>
+        <div id="cartoes" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"></div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl mb-3">Passes e testadores</h2>
+        <form id="formBeta" class="flex flex-wrap items-end gap-2 mb-3">
+          <label class="text-xs text-slate-500">E-mail do testador<br><input id="betaEmail" type="email" required class="campo w-72" placeholder="colega@email.com" /></label>
+          <label class="text-xs text-slate-500">Dias<br><input id="betaDias" type="number" min="1" max="365" value="60" class="campo w-20" /></label>
+          <label class="text-xs text-slate-500">Editais<br><input id="betaEditais" type="number" min="1" max="10" value="3" class="campo w-20" /></label>
+          <button class="btn btn-escuro">Liberar passe Beta</button>
+        </form>
+        <p id="msgBeta" class="text-sm mb-3"></p>
+        <div class="rolagem"><table><thead><tr><th>E-mail</th><th>Plano</th><th>Editais</th><th>Válido até</th><th></th></tr></thead><tbody id="tPasses"></tbody></table></div>
+      </div>
+
+      <div><h2 class="text-2xl mb-3">Leads (teste grátis e lista de espera)</h2>
+        <div class="rolagem"><table><thead><tr><th>Data</th><th>Contato</th><th>Nível</th><th>Área</th><th>Tema</th></tr></thead><tbody id="tLeads"></tbody></table></div></div>
+
+      <div><h2 class="text-2xl mb-3">Estruturas grátis (30 dias)</h2>
+        <div class="rolagem"><table><thead><tr><th>Data</th><th>Contato</th><th>Nível</th><th>Área</th><th>Status</th><th class="text-right">US$</th></tr></thead><tbody id="tEstruturas"></tbody></table></div></div>
+
+      <div><h2 class="text-2xl mb-3">Projetos</h2>
+        <div class="rolagem"><table><thead><tr><th>Atualizado</th><th>Usuário</th><th>Título</th><th>Nível</th><th>Status</th><th>Gerações</th></tr></thead><tbody id="tProjetos"></tbody></table></div></div>
+
+      <div><h2 class="text-2xl mb-3">Usuários cadastrados</h2>
+        <div class="rolagem"><table><thead><tr><th>E-mail</th><th>Criado em</th><th>Último acesso</th></tr></thead><tbody id="tUsuarios"></tbody></table></div></div>
+    </section>
+  </main>
+
+  <script>
+  {
+    const URL_SB = 'https://nomnxrazjypvulmtunjo.supabase.co';
+    const sb = window.supabase.createClient(URL_SB, 'sb_publishable_ywC3iAIskK6wpTCMebZDxQ_sS67BSPL');
+    const FUNCAO = URL_SB + '/functions/v1/admin';
+    const $ = id => document.getElementById(id);
+    const dt = s => s ? new Date(s).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+    const usd = v => 'US$ ' + (v || 0).toFixed(2);
+    const custo = r => (((r.tokens_entrada || 0) * 2 + (r.tokens_saida || 0) * 10) / 1e6);
+
+    function linha(tbody, valores, extra) {
+      const tr = document.createElement('tr');
+      valores.forEach(v => { const td = document.createElement('td'); if (v && v.num) { td.className = 'num text-right'; td.textContent = v.t; } else td.textContent = v == null ? '' : String(v); tr.appendChild(td); });
+      if (extra) { const td = document.createElement('td'); td.appendChild(extra); tr.appendChild(td); }
+      tbody.appendChild(tr);
+    }
+    function vazio(tbody, n) { if (!tbody.children.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = n; td.className = 'text-slate-400'; td.textContent = 'Nada por aqui ainda.'; tr.appendChild(td); tbody.appendChild(tr); } }
+
+    async function chamar(corpo) {
+      const { data: { session } } = await sb.auth.getSession();
+      const r = await fetch(FUNCAO, { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+      const j = await r.json().catch(() => null);
+      if (!j) throw new Error('Resposta inválida do servidor.');
+      return j;
+    }
+
+    async function carregar() {
+      const j = await chamar({ acao: 'resumo' });
+      if (!j.ok) { $('painel').classList.add('hidden'); $('negado').textContent = j.motivo; $('negado').classList.remove('hidden'); return; }
+      $('painel').classList.remove('hidden'); $('btnAtualizar').classList.remove('hidden');
+      const n = j.numeros;
+      const cards = [['Leads', n.leads_total], ['Usuários', n.usuarios_total], ['Passes ativos', n.passes_ativos], ['Projetos', n.projetos_total],
+        ['Estruturas grátis hoje', n.estruturas_hoje], ['Gerações de projeto hoje', n.geracoes_hoje], ['Gasto de IA hoje', usd(n.custo_hoje_usd)], ['Gasto de IA em 30 dias', usd(n.custo_30d_usd)]];
+      $('cartoes').innerHTML = '';
+      cards.forEach(([t, v]) => { const d = document.createElement('div'); d.className = 'bg-white border border-stone-200 rounded-xl p-4';
+        const a = document.createElement('div'); a.className = 'text-xs text-slate-500'; a.textContent = t;
+        const b = document.createElement('div'); b.className = 'num text-2xl font-bold text-slate-900 mt-1'; b.textContent = v;
+        d.append(a, b); $('cartoes').appendChild(d); });
+      if (n.erros_30d) { const d = document.createElement('div'); d.className = 'col-span-2 md:col-span-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3'; d.textContent = n.erros_30d + ' geração(ões) com erro nos últimos 30 dias — veja a coluna Status.'; $('cartoes').appendChild(d); }
+
+      const tp = $('tPasses'); tp.innerHTML = '';
+      j.passes.forEach(p => {
+        const ativo = new Date(p.valido_ate) > new Date();
+        const b = document.createElement('button'); b.className = 'text-xs underline text-red-700'; b.textContent = 'Revogar';
+        b.addEventListener('click', async () => {
+          if (b.dataset.c !== '1') { b.dataset.c = '1'; b.textContent = 'Confirmar revogação'; return; }
+          b.disabled = true; const r = await chamar({ acao: 'revogar', email: p.email }); $('msgBeta').textContent = r.ok ? r.mensagem : r.motivo; carregar();
+        });
+        linha(tp, [p.email, p.plano, p.editais_max, dt(p.valido_ate) + (ativo ? '' : ' (vencido)')], b);
+      }); vazio(tp, 5);
+
+      const tl = $('tLeads'); tl.innerHTML = '';
+      j.leads.forEach(l => linha(tl, [dt(l.created_at), l.contato, l.nivel, l.area, (l.tema || '').slice(0, 120)])); vazio(tl, 5);
+      const te = $('tEstruturas'); te.innerHTML = '';
+      j.estruturas.forEach(e => linha(te, [dt(e.created_at), e.contato, e.nivel, e.area, e.status + (e.erro ? ' — ' + e.erro.slice(0, 80) : ''), { num: true, t: custo(e).toFixed(3) }])); vazio(te, 6);
+      const tj = $('tProjetos'); tj.innerHTML = '';
+      j.projetos.forEach(p => linha(tj, [dt(p.updated_at), p.email, p.titulo, p.nivel, p.status, p.geracoes])); vazio(tj, 6);
+      const tu = $('tUsuarios'); tu.innerHTML = '';
+      j.usuarios.forEach(u => linha(tu, [u.email, dt(u.created_at), dt(u.last_sign_in_at)])); vazio(tu, 3);
+    }
+
+    $('formBeta').addEventListener('submit', async e => {
+      e.preventDefault(); const btn = e.submitter; btn.disabled = true; $('msgBeta').textContent = 'Liberando…';
+      try { const r = await chamar({ acao: 'liberar_beta', email: $('betaEmail').value, dias: $('betaDias').value, editais: $('betaEditais').value });
+        $('msgBeta').textContent = r.ok ? r.mensagem : r.motivo; if (r.ok) { $('formBeta').reset(); carregar(); } }
+      catch (err) { $('msgBeta').textContent = err.message; }
+      btn.disabled = false;
+    });
+
+    $('formLogin').addEventListener('submit', async e => {
+      e.preventDefault();
+      const { error } = await sb.auth.signInWithOtp({ email: $('email').value.trim(), options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: false } });
+      $('msgLogin').textContent = error ? 'Erro: ' + error.message : 'Link enviado. Abra o e-mail e clique para entrar.';
+    });
+    $('btnSair').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+    $('btnAtualizar').addEventListener('click', carregar);
+
+    let ultimo;
+    sb.auth.onAuthStateChange((ev, session) => {
+      const id = session?.user?.id ?? null;
+      if (ev !== 'INITIAL_SESSION' && id === ultimo) return;
+      ultimo = id;
+      setTimeout(() => {
+        if (!session) { $('telaLogin').classList.remove('hidden'); return; }
+        $('telaLogin').classList.add('hidden'); $('quem').textContent = session.user.email; $('btnSair').classList.remove('hidden');
+        carregar().catch(err => { $('negado').textContent = err.message; $('negado').classList.remove('hidden'); });
+      }, 0);
+    });
+  }
+  </script>
+</body>
+</html>
