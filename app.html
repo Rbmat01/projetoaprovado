@@ -153,6 +153,39 @@
           </div>
         </section>
 
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-1">Artigos do referencial</h2>
+          <p class="text-sm text-slate-500 mb-3">Envie os artigos em PDF que vão embasar o projeto. Cada um vira um fichamento com trechos e páginas que você pode conferir no original. <span id="aCota"></span></p>
+          <div class="bg-white border border-stone-200 rounded-xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center gap-3">
+              <input id="aArquivos" type="file" accept="application/pdf,.pdf" multiple class="campo max-w-md" />
+              <button id="btnAnalisar" class="btn btn-escuro">Enviar e analisar</button>
+            </div>
+            <p class="text-xs text-slate-500">PDFs com texto selecionável, até 15 MB cada. Cada artigo leva de 30 segundos a 1 minuto; mantenha esta página aberta até terminar.</p>
+            <p id="aProgresso" class="hidden text-sm rounded-lg p-3"></p>
+            <div id="aLista" class="space-y-2"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
+            <div>
+              <h2 class="font-serif text-2xl font-bold text-oxford-900">Justificativa e Referencial teórico</h2>
+              <p class="text-sm text-slate-500">Rascunho escrito só a partir dos seus fichamentos, com cada citação conferida automaticamente.</p>
+            </div>
+            <button id="btnSintetizar" class="btn btn-escuro">Gerar textos</button>
+          </div>
+          <p id="sStatus" class="hidden mb-3 text-sm rounded-lg p-3"></p>
+          <div id="sConteudo" class="hidden bg-white border border-stone-200 rounded-xl p-5 space-y-5">
+            <div id="sVerificacao" class="text-sm rounded-lg p-3"></div>
+            <div><label class="rotulo" for="sJust">Justificativa</label><textarea id="sJust" rows="12" class="campo"></textarea></div>
+            <div><label class="rotulo" for="sRef">Referencial teórico</label><textarea id="sRef" rows="18" class="campo"></textarea></div>
+            <div id="blocoLacunas"><label class="rotulo">O que ainda falta ler</label><ul id="sLacunas" class="list-disc pl-5 text-sm text-slate-700 space-y-1"></ul></div>
+            <div><label class="rotulo">Referências (ABNT) — só os artigos citados</label><ol id="sRefs" class="list-decimal pl-5 text-sm text-slate-700 space-y-1"></ol></div>
+            <div class="flex flex-wrap gap-2"><button id="btnSalvarTextos" class="btn btn-escuro">Salvar textos</button><button id="btnCopiarTextos" class="btn btn-claro">Copiar tudo</button></div>
+          </div>
+        </section>
+
         <p class="text-xs text-slate-500 border-t border-stone-200 pt-4">Conteúdo gerado por IA a partir do edital e do tema informados. Confira cada regra no edital original e revise com o seu futuro orientador. A pesquisa e a redação final são suas.</p>
       </div>
     </section>
@@ -321,7 +354,163 @@
         corpo.appendChild(tr);
       });
       mostrar('telaProjeto');
+      carregarArtigos();
+      mostrarTextos(p.textos);
     }
+
+    // ---------- Artigos ----------
+    const FUNC_ARTIGO = SUPABASE_URL + '/functions/v1/artigo-analisar';
+    const FUNC_SINTESE = SUPABASE_URL + '/functions/v1/projeto-sintetizar';
+    const MAX_ARTIGO = 15 * 1024 * 1024;
+    let artigosAtuais = [];
+
+    async function chamar(url, corpo) {
+      const { data: { session } } = await sb.auth.getSession();
+      const r = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+      const j = await r.json().catch(() => null);
+      if (!j || !j.ok) throw new Error(j?.motivo || 'Erro no servidor. Tente de novo.');
+      return j;
+    }
+
+    function blocoFicha(titulo, linhas, pagCalc) {
+      const d = el('div');
+      d.appendChild(el('div', 'rotulo', titulo));
+      (linhas || []).forEach(l => {
+        const p = el('p', 'text-sm text-slate-800', l.texto); d.appendChild(p);
+        (l.citacoes || []).forEach(c => {
+          const pag = c.pag_impressa ? ('p. ' + c.pag_impressa + (pagCalc && c.pag_pdf !== c.pag_impressa ? ' (página ' + c.pag_pdf + ' do PDF)' : pagCalc ? '' : ' do PDF')) : 'página ?';
+          d.appendChild(el('p', 'text-xs text-slate-500 border-l-2 border-amber-300 pl-2 my-1', pag + ' — “' + c.trecho + '”'));
+        });
+      });
+      return d;
+    }
+
+    function cartaoArtigo(a) {
+      const card = el('div', 'border border-stone-200 rounded-lg p-3');
+      const topo = el('div', 'flex flex-wrap items-start justify-between gap-2');
+      const esq = el('div', 'min-w-0 flex-1');
+      esq.appendChild(el('div', 'text-sm font-semibold text-oxford-900 break-words', a.referencia || a.nome_arquivo));
+      const rot = { enviado: 'Na fila', analisando: 'Analisando…', pronto: 'Fichado', erro: 'Erro' }[a.status] || a.status;
+      esq.appendChild(el('div', 'text-xs text-slate-500', rot + (a.erro ? ' — ' + a.erro : '') + (a.referencia ? ' • ' + a.nome_arquivo : '')));
+      topo.appendChild(esq);
+      const botoes = el('div', 'flex gap-2');
+      if (a.status === 'pronto') {
+        const ver = el('button', 'text-xs underline text-oxford-900', 'Ver fichamento');
+        botoes.appendChild(ver);
+        const det = el('div', 'hidden mt-3 space-y-3 border-t border-stone-100 pt-3');
+        const f = a.ficha || {};
+        if (!f.pagina_impressa_calculada) det.appendChild(el('p', 'text-xs text-amber-800 bg-amber-50 rounded p-2', 'O PDF não informa a página inicial do artigo no periódico: as páginas abaixo são as do PDF. Confira a numeração antes de citar.'));
+        [['Objetivo', f.objetivo], ['Método', f.metodo], ['Resultados', f.resultados], ['Conclusão', f.conclusao], ['Trechos úteis', f.trechos]].forEach(([t, l]) => { if (l && l.length) det.appendChild(blocoFicha(t, l, f.pagina_impressa_calculada)); });
+        if (f.contribuicao && f.contribuicao.length) { const c = el('div'); c.appendChild(el('div', 'rotulo', 'Como usar no seu projeto')); f.contribuicao.forEach(l => c.appendChild(el('p', 'text-sm text-slate-800', l.texto))); det.appendChild(c); }
+        ver.addEventListener('click', () => { det.classList.toggle('hidden'); ver.textContent = det.classList.contains('hidden') ? 'Ver fichamento' : 'Fechar'; });
+        card.append(topo, det);
+      } else card.appendChild(topo);
+      if (a.status === 'erro' || a.status === 'enviado') {
+        const tentar = el('button', 'text-xs underline text-oxford-900', 'Tentar de novo');
+        tentar.addEventListener('click', () => analisarFila([a.id]));
+        botoes.appendChild(tentar);
+      }
+      const rem = el('button', 'text-xs underline text-red-700', 'Remover');
+      rem.addEventListener('click', async () => {
+        if (rem.dataset.c !== '1') { rem.dataset.c = '1'; rem.textContent = 'Confirmar remoção'; setTimeout(() => { rem.dataset.c = ''; rem.textContent = 'Remover'; }, 8000); return; }
+        rem.disabled = true;
+        await sb.storage.from('artigos').remove([usuario.id + '/' + atual.id + '/' + a.id + '.pdf']);
+        const { error } = await sb.from('artigos').delete().eq('id', a.id);
+        if (error) aviso($('aProgresso'), 'Não foi possível remover: ' + error.message, 'erro');
+        carregarArtigos();
+      });
+      botoes.appendChild(rem);
+      topo.appendChild(botoes);
+      return card;
+    }
+
+    async function carregarArtigos() {
+      const { data } = await sb.from('artigos').select('*').eq('projeto_id', atual.id).order('created_at');
+      artigosAtuais = data || [];
+      const lista = $('aLista'); lista.innerHTML = '';
+      artigosAtuais.forEach(a => lista.appendChild(cartaoArtigo(a)));
+      if (!artigosAtuais.length) lista.appendChild(el('p', 'text-sm text-slate-400', 'Nenhum artigo enviado ainda.'));
+      const { count } = await sb.from('artigos').select('id', { count: 'exact', head: true }).eq('status', 'pronto');
+      $('aCota').textContent = acesso ? 'Seu passe permite ' + acesso.artigos_max + ' artigos fichados no total; você já usou ' + (count || 0) + '.' : '';
+      const prontos = artigosAtuais.filter(a => a.status === 'pronto').length;
+      $('btnSintetizar').disabled = prontos < 2 || (atual.sinteses || 0) >= 3;
+      $('btnSintetizar').title = prontos < 2 ? 'Fiche pelo menos 2 artigos' : '';
+    }
+
+    async function analisarFila(ids) {
+      const caixa = $('aProgresso'); let ok = 0; const erros = [];
+      $('btnAnalisar').disabled = true;
+      for (let i = 0; i < ids.length; i++) {
+        aviso(caixa, 'Analisando artigo ' + (i + 1) + ' de ' + ids.length + '… (até 1 minuto cada)', 'info');
+        try { await chamar(FUNC_ARTIGO, { artigo_id: ids[i] }); ok++; }
+        catch (err) { erros.push(err.message); if (/limite|passe/i.test(err.message)) { await carregarArtigos(); break; } }
+        await carregarArtigos();
+      }
+      $('btnAnalisar').disabled = false;
+      aviso(caixa, ok + ' artigo(s) fichado(s).' + (erros.length ? ' Problemas: ' + [...new Set(erros)].join(' ') : ''), erros.length ? 'erro' : 'ok');
+    }
+
+    $('btnAnalisar').addEventListener('click', async () => {
+      const arquivos = [...$('aArquivos').files];
+      if (!arquivos.length) return aviso($('aProgresso'), 'Escolha um ou mais PDFs.', 'erro');
+      const grandes = arquivos.filter(f => f.size > MAX_ARTIGO);
+      if (grandes.length) return aviso($('aProgresso'), 'Arquivo acima de 15 MB: ' + grandes.map(f => f.name).join(', '), 'erro');
+      $('btnAnalisar').disabled = true;
+      const ids = [];
+      for (const f of arquivos) {
+        aviso($('aProgresso'), 'Enviando ' + f.name + '…', 'info');
+        const { data: a, error } = await sb.from('artigos').insert({ projeto_id: atual.id, nome_arquivo: f.name.slice(0, 200) }).select('id').single();
+        if (error) { aviso($('aProgresso'), 'Erro ao registrar ' + f.name + ': ' + error.message, 'erro'); continue; }
+        const up = await sb.storage.from('artigos').upload(usuario.id + '/' + atual.id + '/' + a.id + '.pdf', f, { upsert: true, contentType: 'application/pdf' });
+        if (up.error) { await sb.from('artigos').delete().eq('id', a.id); aviso($('aProgresso'), 'Falha ao enviar ' + f.name + ': ' + up.error.message, 'erro'); continue; }
+        ids.push(a.id);
+      }
+      $('aArquivos').value = '';
+      await carregarArtigos();
+      if (ids.length) await analisarFila(ids); else $('btnAnalisar').disabled = false;
+    });
+
+    // ---------- Justificativa e Referencial ----------
+    function mostrarTextos(t) {
+      if (!t) { $('sConteudo').classList.add('hidden'); return; }
+      $('sConteudo').classList.remove('hidden');
+      $('sJust').value = t.justificativa || '';
+      $('sRef').value = (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo.toUpperCase() + '\n\n' : '') + s.texto).join('\n\n');
+      const ul = $('sLacunas'); ul.innerHTML = ''; (t.lacunas || []).forEach(x => ul.appendChild(el('li', '', x)));
+      $('blocoLacunas').classList.toggle('hidden', !(t.lacunas || []).length);
+      const ol = $('sRefs'); ol.innerHTML = ''; (t.referencias || []).forEach(x => ol.appendChild(el('li', '', x)));
+      const v = t.verificacao || {}, box = $('sVerificacao'); box.innerHTML = '';
+      const problemas = (v.nao_confirmadas || []).length + (v.diretas_nao_confirmadas || []).length;
+      box.className = 'text-sm rounded-lg p-3 ' + (problemas ? 'bg-amber-50 border border-amber-200 text-amber-900' : 'bg-emerald-50 border border-emerald-200 text-emerald-900');
+      box.appendChild(el('p', 'font-semibold', problemas
+        ? 'Atenção: ' + problemas + ' citação(ões) não puderam ser confirmadas nos fichamentos. Corrija ou remova antes de usar.'
+        : 'Todas as ' + (v.confirmadas || 0) + ' citações com página foram confirmadas nos trechos fichados.' + (v.sem_pagina ? ' ' + v.sem_pagina + ' citação(ões) indireta(s) sem página.' : '')));
+      (v.nao_confirmadas || []).forEach(c => box.appendChild(el('p', 'text-xs mt-1', c.citacao + ' — ' + (c.motivo || ''))));
+      (v.diretas_nao_confirmadas || []).forEach(c => box.appendChild(el('p', 'text-xs mt-1', 'Citação direta não encontrada nos trechos: “' + c + '…”')));
+      box.appendChild(el('p', 'text-xs mt-2 opacity-80', 'A conferência automática verifica autor, ano e página contra os fichamentos. A leitura crítica e a revisão final continuam sendo suas.'));
+    }
+
+    $('btnSintetizar').addEventListener('click', async () => {
+      const btn = $('btnSintetizar'), st = $('sStatus');
+      if (atual.textos && btn.dataset.c !== '1') { btn.dataset.c = '1'; btn.textContent = 'Confirmar: gerar de novo'; return aviso(st, 'Gerar de novo substitui os textos atuais (restam ' + (3 - (atual.sinteses || 0)) + ' geração(ões) de texto neste projeto).', 'info'); }
+      btn.dataset.c = ''; btn.disabled = true; btn.textContent = 'Escrevendo… (até 1 minuto)'; esconder(st);
+      try { const j = await chamar(FUNC_SINTESE, { projeto_id: atual.id }); atual = j.projeto; mostrarTextos(atual.textos); aviso(st, 'Textos gerados e conferidos.', 'ok'); }
+      catch (err) { aviso(st, err.message, 'erro'); }
+      btn.textContent = 'Gerar textos'; carregarArtigos();
+    });
+
+    $('btnSalvarTextos').addEventListener('click', async () => {
+      const t = Object.assign({}, atual.textos || {}, { justificativa: $('sJust').value, referencial: [{ subtitulo: '', texto: $('sRef').value }], editado_em: new Date().toISOString() });
+      const { data, error } = await sb.from('projetos').update({ textos: t }).eq('id', atual.id).select('*').single();
+      if (error) return aviso($('sStatus'), 'Erro ao salvar: ' + error.message, 'erro');
+      atual = data; aviso($('sStatus'), 'Textos salvos.', 'ok');
+    });
+
+    $('btnCopiarTextos').addEventListener('click', async () => {
+      const refs = [...$('sRefs').children].map(li => li.textContent).join('\n');
+      const tudo = 'JUSTIFICATIVA\n\n' + $('sJust').value + '\n\nREFERENCIAL TEÓRICO\n\n' + $('sRef').value + '\n\nREFERÊNCIAS\n\n' + refs;
+      try { await navigator.clipboard.writeText(tudo); aviso($('sStatus'), 'Texto copiado.', 'ok'); } catch { aviso($('sStatus'), 'Não foi possível copiar automaticamente; selecione o texto manualmente.', 'erro'); }
+    });
 
     async function abrirProjeto(id) {
       esconder($('msgGeral'));
