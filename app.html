@@ -186,6 +186,38 @@
           </div>
         </section>
 
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-1">Cronograma</h2>
+          <p class="text-sm text-slate-500 mb-3">Clique nas células para marcar ou desmarcar os períodos. O nome das atividades pode ser editado. Salve com "Salvar alterações".</p>
+          <div class="bg-white border border-stone-200 rounded-xl p-4 space-y-3">
+            <div class="flex flex-wrap items-end gap-3">
+              <div><label class="rotulo" for="cInicio">Início do curso</label><input id="cInicio" type="month" class="campo" /></div>
+              <button id="btnCronoSugestao" class="btn btn-claro" type="button">Preencher sugestão</button>
+              <button id="btnCronoLinha" class="btn btn-claro" type="button">+ Atividade</button>
+            </div>
+            <div class="overflow-x-auto"><table class="text-xs border-collapse w-full"><thead id="cCabeca"></thead><tbody id="cCorpo"></tbody></table></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-1">Documento final (.docx)</h2>
+          <p class="text-sm text-slate-500 mb-3">Junta estrutura, textos, matriz, cronograma e referências em um arquivo Word com a formatação pedida no edital.</p>
+          <div class="bg-white border border-stone-200 rounded-xl p-5 space-y-4">
+            <p id="dCega" class="hidden text-sm rounded-lg p-3 bg-amber-50 border border-amber-200 text-amber-900"></p>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div id="blocoNome"><label class="rotulo" for="dNome">Nome do candidato (folha de rosto)</label><input id="dNome" class="campo" maxlength="150" /></div>
+              <div><label class="rotulo" for="dLinha">Linha de pesquisa</label><input id="dLinha" class="campo" maxlength="300" /></div>
+              <div><label class="rotulo" for="dCidade">Cidade</label><input id="dCidade" class="campo" maxlength="80" /></div>
+              <div><label class="rotulo" for="dAno">Ano</label><input id="dAno" class="campo" maxlength="4" inputmode="numeric" /></div>
+            </div>
+            <div><label class="rotulo" for="dResumo">Resumo <span id="dResumoConta" class="normal-case font-normal"></span></label><textarea id="dResumo" rows="6" class="campo" placeholder="Escreva o resumo por último, depois de revisar o projeto inteiro."></textarea></div>
+            <div><label class="rotulo" for="dPalavras">Palavras-chave (separe por ponto e vírgula)</label><input id="dPalavras" class="campo" maxlength="300" /></div>
+            <div class="flex flex-wrap items-center gap-3"><button id="btnDocx" class="btn btn-escuro" type="button">Baixar .docx</button><span id="dEstimativa" class="text-sm text-slate-600"></span></div>
+            <p id="dStatus" class="hidden text-sm rounded-lg p-3"></p>
+            <p class="text-xs text-slate-500">Trechos entre colchetes e marcados em amarelo são lacunas para você completar no Word. Confira no edital a ordem das seções e o limite de páginas antes de enviar.</p>
+          </div>
+        </section>
+
         <p class="text-xs text-slate-500 border-t border-stone-200 pt-4">Conteúdo gerado por IA a partir do edital e do tema informados. Confira cada regra no edital original e revise com o seu futuro orientador. A pesquisa e a redação final são suas.</p>
       </div>
     </section>
@@ -356,6 +388,8 @@
       mostrar('telaProjeto');
       carregarArtigos();
       mostrarTextos(p.textos);
+      mostrarCronograma(p.cronograma);
+      mostrarDocumento(p.documento);
     }
 
     // ---------- Artigos ----------
@@ -500,7 +534,7 @@
     });
 
     $('btnSalvarTextos').addEventListener('click', async () => {
-      const t = Object.assign({}, atual.textos || {}, { justificativa: $('sJust').value, referencial: [{ subtitulo: '', texto: $('sRef').value }], editado_em: new Date().toISOString() });
+      const t = Object.assign({}, atual.textos || {}, { justificativa: $('sJust').value, referencial: separarReferencial($('sRef').value), editado_em: new Date().toISOString() });
       const { data, error } = await sb.from('projetos').update({ textos: t }).eq('id', atual.id).select('*').single();
       if (error) return aviso($('sStatus'), 'Erro ao salvar: ' + error.message, 'erro');
       atual = data; aviso($('sStatus'), 'Textos salvos.', 'ok');
@@ -510,6 +544,276 @@
       const refs = [...$('sRefs').children].map(li => li.textContent).join('\n');
       const tudo = 'JUSTIFICATIVA\n\n' + $('sJust').value + '\n\nREFERENCIAL TEÓRICO\n\n' + $('sRef').value + '\n\nREFERÊNCIAS\n\n' + refs;
       try { await navigator.clipboard.writeText(tudo); aviso($('sStatus'), 'Texto copiado.', 'ok'); } catch { aviso($('sStatus'), 'Não foi possível copiar automaticamente; selecione o texto manualmente.', 'erro'); }
+    });
+
+    // ---------- Referencial: texto da caixa -> seções ----------
+    function separarReferencial(texto) {
+      const blocos = String(texto || '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+      const secoes = []; let cur = { subtitulo: '', texto: '' };
+      for (const b of blocos) {
+        const ehTitulo = b.length <= 140 && !b.includes('\n') && b === b.toUpperCase() && /[A-ZÀ-Ú]/.test(b) && !/[.:;]$/.test(b);
+        if (ehTitulo) { if (cur.texto || cur.subtitulo) secoes.push(cur); cur = { subtitulo: b.charAt(0) + b.slice(1).toLowerCase(), texto: '' }; }
+        else cur.texto += (cur.texto ? '\n\n' : '') + b;
+      }
+      if (cur.texto || cur.subtitulo) secoes.push(cur);
+      return secoes;
+    }
+
+    // ---------- Cronograma ----------
+    const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    let crono = null;
+    const inicioPadrao = () => (new Date().getFullYear() + 1) + '-03';
+    function formatoCrono() { return atual.nivel === 'Doutorado' ? { passo: 3, colunas: 16 } : { passo: 2, colunas: 12 }; }
+    function rotulosCrono(c) {
+      const [a, m] = (c.inicio || inicioPadrao()).split('-').map(Number);
+      return Array.from({ length: c.colunas }, (_, i) => {
+        const ini = (m - 1) + i * c.passo, fim = ini + c.passo - 1;
+        const r = x => MESES[x % 12];
+        return r(ini) + '–' + r(fim) + '/' + String(a + Math.floor(fim / 12)).slice(2);
+      });
+    }
+    function cronoSugerido() {
+      const f = formatoCrono(), c = f.colunas, faixa = (a, b) => { const o = []; for (let i = Math.max(0, a); i <= Math.min(c - 1, b); i++) o.push(i); return o; };
+      const esp = [0, 1, 2].map(i => $('eEsp' + i).value.trim()).filter(Boolean);
+      const tese = atual.nivel === 'Doutorado' ? 'tese' : 'dissertação';
+      const linhas = [
+        { atividade: 'Cumprimento das disciplinas', marcados: faixa(0, Math.floor(c * 0.5) - 1) },
+        { atividade: 'Revisão de literatura e fichamentos', marcados: faixa(0, Math.floor(c * 0.8) - 1) },
+      ];
+      esp.forEach((o, i) => {
+        const ini = Math.floor(c * 0.25) + i * Math.max(1, Math.floor(c * 0.15));
+        linhas.push({ atividade: 'Objetivo ' + (i + 1) + ': ' + o.replace(/^[a-z]\)\s*/i, '').slice(0, 90), marcados: faixa(ini, Math.min(ini + Math.max(2, Math.floor(c * 0.3)) - 1, c - 3)) });
+      });
+      linhas.push({ atividade: 'Exame de qualificação', marcados: [Math.floor(c * 0.5)] });
+      linhas.push({ atividade: 'Redação da ' + tese, marcados: faixa(Math.floor(c * 0.66), c - 1) });
+      linhas.push({ atividade: 'Submissão de artigo', marcados: faixa(c - 3, c - 2) });
+      linhas.push({ atividade: 'Defesa da ' + tese, marcados: [c - 1] });
+      return { inicio: $('cInicio').value || inicioPadrao(), passo: f.passo, colunas: c, linhas };
+    }
+    function desenharCrono() {
+      const cab = $('cCabeca'), corpo = $('cCorpo'); cab.innerHTML = ''; corpo.innerHTML = '';
+      const tr = el('tr'); tr.appendChild(el('th', 'p-1 text-left font-mono text-[10px] uppercase text-slate-500 min-w-[200px]', 'Atividade'));
+      rotulosCrono(crono).forEach(r => tr.appendChild(el('th', 'p-1 font-mono text-[10px] text-slate-500 whitespace-nowrap', r)));
+      tr.appendChild(el('th')); cab.appendChild(tr);
+      crono.linhas.forEach((l, li) => {
+        const r = el('tr', 'border-t border-stone-100');
+        const td = el('td', 'p-1'); const inp = el('input', 'campo !py-1 text-xs'); inp.value = l.atividade; inp.maxLength = 150;
+        inp.addEventListener('input', () => { l.atividade = inp.value; }); td.appendChild(inp); r.appendChild(td);
+        for (let i = 0; i < crono.colunas; i++) {
+          const c = el('td', 'p-0 border border-stone-100');
+          const b = el('button', 'w-full h-7 ' + (l.marcados.includes(i) ? 'bg-oxford-900' : 'hover:bg-stone-100'));
+          b.type = 'button'; b.title = 'Marcar/desmarcar';
+          b.addEventListener('click', () => { l.marcados = l.marcados.includes(i) ? l.marcados.filter(x => x !== i) : [...l.marcados, i].sort((x, y) => x - y); desenharCrono(); });
+          c.appendChild(b); r.appendChild(c);
+        }
+        const tdx = el('td', 'p-1'); const x = el('button', 'text-red-700 px-1', '✕'); x.type = 'button'; x.title = 'Remover atividade';
+        x.addEventListener('click', () => { crono.linhas.splice(li, 1); desenharCrono(); }); tdx.appendChild(x); r.appendChild(tdx);
+        corpo.appendChild(r);
+      });
+    }
+    function mostrarCronograma(c) {
+      crono = c && Array.isArray(c.linhas) ? JSON.parse(JSON.stringify(c)) : null;
+      if (!crono) { $('cInicio').value = inicioPadrao(); crono = cronoSugerido(); }
+      $('cInicio').value = crono.inicio; desenharCrono();
+    }
+    function coletarCronograma() { if (!crono) return null; crono.inicio = $('cInicio').value || crono.inicio; return crono; }
+    $('cInicio').addEventListener('change', () => { if (crono) { crono.inicio = $('cInicio').value || inicioPadrao(); desenharCrono(); } });
+    $('btnCronoSugestao').addEventListener('click', () => { crono = cronoSugerido(); desenharCrono(); });
+    $('btnCronoLinha').addEventListener('click', () => { crono.linhas.push({ atividade: 'Nova atividade', marcados: [] }); desenharCrono(); });
+
+    // ---------- Documento ----------
+    const editalCego = () => /sem (qualquer )?identifica|não (pode|deve)[^.]{0,40}identifica|anonim|cega|omitir o nome/i.test(atual?.edital_resumo?.avaliacao_cega || '');
+    const contarPalavras = s => String(s || '').split(/\s+/).filter(Boolean).length;
+    function mostrarDocumento(d) {
+      d = d || {};
+      const cego = editalCego();
+      $('blocoNome').classList.toggle('hidden', cego);
+      const av = $('dCega'); av.classList.toggle('hidden', !cego);
+      if (cego) av.textContent = 'Este edital pede avaliação sem identificação do candidato. Por isso o documento sai sem o seu nome. Revise também propriedades do arquivo e o texto para não se identificar.';
+      $('dNome').value = d.nome || '';
+      $('dLinha').value = d.linha || $('eLinha').value.split(/[.,;(]/)[0].trim();
+      $('dCidade').value = d.cidade || '';
+      $('dAno').value = d.ano || String(($('cInicio').value || inicioPadrao()).slice(0, 4));
+      $('dResumo').value = d.resumo || '';
+      $('dPalavras').value = d.palavras || '';
+      atualizarContagem(); esconder($('dStatus'));
+    }
+    function coletarDocumento() {
+      return { nome: $('dNome').value.trim(), linha: $('dLinha').value.trim(), cidade: $('dCidade').value.trim(), ano: $('dAno').value.trim(), resumo: $('dResumo').value.trim(), palavras: $('dPalavras').value.trim() };
+    }
+    function atualizarContagem() {
+      const n = contarPalavras($('dResumo').value);
+      $('dResumoConta').textContent = '(' + n + ' palavras' + (n > 250 ? ' — o edital costuma limitar a 250' : '') + ')';
+    }
+    $('dResumo').addEventListener('input', atualizarContagem);
+
+    function formatoEdital() {
+      const f = atual.edital_resumo?.formatacao || '';
+      const fonte = /arial/i.test(f) ? 'Arial' : 'Times New Roman';
+      const tam = Number((f.match(/(?:times new roman|arial)\D{0,15}(1[0-4])\b/i) || [])[1]) || 12;
+      const mm = f.match(/margens?[^.]*?(\d+(?:[.,]\d+)?)\s*cm/i);
+      const um = mm ? parseFloat(mm[1].replace(',', '.')) : null;
+      const margens = um && !/superior|esquerd/i.test(f) ? { top: um, bottom: um, left: um, right: um } : { top: 3, left: 3, bottom: 2, right: 2 };
+      const linha = /simples|1[,.]0\b/i.test(f) && !/1[,.]5/.test(f) ? 240 : /dupl|2[,.]0/i.test(f) ? 480 : 360;
+      return { fonte, tam, margens, linha };
+    }
+
+    async function carregarDocx() {
+      if (window.docx) return window.docx;
+      await new Promise((ok, falha) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js'; s.onload = ok; s.onerror = () => falha(new Error('Não foi possível carregar o gerador de Word. Verifique a conexão.')); document.head.appendChild(s); });
+      return window.docx;
+    }
+
+    function montarDocx(D) {
+      const fmt = formatoEdital(), cm = x => Math.round(x * 567), MEIO = fmt.tam * 2;
+      const { Document, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, WidthType, Header, PageNumber, ShadingType, VerticalAlign } = D;
+      const est = coletar().estrutura, matriz = coletar().matriz, doc = coletarDocumento(), cr = coletarCronograma();
+      const t = atual.textos || {};
+      const just = ($('sJust').value || t.justificativa || '').trim();
+      const refSecoes = separarReferencial($('sRef').value || (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo.toUpperCase() + '\n\n' : '') + s.texto).join('\n\n'));
+      const refs = t.referencias || [];
+      let palavras = 0;
+      const runs = (texto, extra = {}) => {
+        const out = []; String(texto).split(/(\[[^\]]+\])/).forEach(p => {
+          if (!p) return;
+          const lac = /^\[.*\]$/.test(p);
+          out.push(new TextRun({ text: p, highlight: lac ? 'yellow' : undefined, ...extra }));
+        });
+        return out;
+      };
+      const P = (texto, o = {}) => { palavras += contarPalavras(texto); return new Paragraph({ children: runs(texto, o.run || {}), alignment: o.al ?? AlignmentType.JUSTIFIED, indent: o.semRecuo ? undefined : { firstLine: cm(1.25) }, spacing: { line: o.linha ?? fmt.linha, before: o.antes ?? 0, after: o.depois ?? 0 }, keepNext: o.keepNext }); };
+      const T1 = txt => new Paragraph({ children: [new TextRun({ text: txt.toUpperCase(), bold: true })], spacing: { line: fmt.linha, before: 360, after: 360 }, keepNext: true });
+      const T2 = txt => new Paragraph({ children: [new TextRun({ text: txt, bold: true })], spacing: { line: fmt.linha, before: 240, after: 240 }, keepNext: true });
+      const vazio = (n = 1) => Array.from({ length: n }, () => new Paragraph({ children: [], spacing: { line: fmt.linha } }));
+      const fim = s => { s = String(s || '').trim(); return !s ? s : /[.!?]$/.test(s) ? s : s + '.'; };
+      const lac = s => '[' + s + ']';
+      const c = (txt, o = {}) => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(txt ?? ''), size: o.size ?? 20, bold: o.bold })], alignment: o.al ?? AlignmentType.LEFT, spacing: { line: 240 } })], shading: o.fill ? { type: ShadingType.CLEAR, color: 'auto', fill: o.fill } : undefined, verticalAlign: VerticalAlign.CENTER, width: o.w ? { size: o.w, type: WidthType.PERCENTAGE } : undefined, margins: { top: 40, bottom: 40, left: 60, right: 60 } });
+      const legenda = (txt, depois) => new Paragraph({ children: [new TextRun({ text: txt, size: 20 })], alignment: AlignmentType.LEFT, spacing: { line: 240, before: depois ? 60 : 240, after: depois ? 240 : 60 }, keepNext: !depois });
+
+      // Folha de rosto
+      const ed = atual.edital_resumo || {};
+      const programa = (ed.programa || '').split(/[(–—]/)[0].trim();
+      const rosto = [];
+      const centro = (txt, o = {}) => new Paragraph({ children: runs(txt, { bold: o.bold }), alignment: AlignmentType.CENTER, spacing: { line: fmt.linha, before: o.antes ?? 0, after: 0 } });
+      if (programa) rosto.push(centro(programa.toUpperCase(), { bold: true }));
+      rosto.push(centro('PROCESSO SELETIVO — ' + (atual.nivel || '').toUpperCase() + ' ' + (doc.ano || ''), { bold: true }));
+      if (!editalCego() && doc.nome) rosto.push(centro(doc.nome.toUpperCase(), { antes: 1400 }));
+      rosto.push(centro(($('pTitulo').value.trim() || atual.titulo).toUpperCase(), { bold: true, antes: 3400 }));
+      rosto.push(centro('Projeto de pesquisa apresentado ao processo seletivo do ' + (programa || lac('nome do programa')) + ', nível ' + (atual.nivel || '').toLowerCase() + '.', { antes: 1200 }));
+      rosto.push(centro('Linha de pesquisa: ' + (doc.linha || lac('linha de pesquisa')), { antes: 240 }));
+      rosto.push(centro(doc.cidade || lac('Cidade'), { antes: 3400 }));
+      rosto.push(new Paragraph({ children: [new TextRun(doc.ano || lac('Ano'))], alignment: AlignmentType.CENTER, spacing: { line: fmt.linha }, pageBreakBefore: false }));
+
+      const corpo = [];
+      // Resumo
+      corpo.push(new Paragraph({ children: [new TextRun({ text: 'RESUMO', bold: true })], alignment: AlignmentType.CENTER, spacing: { line: fmt.linha, after: 360 }, pageBreakBefore: true }));
+      corpo.push(P(doc.resumo || lac('Escreva aqui o resumo, em parágrafo único, com até 250 palavras: tema, problema, objetivo, método e resultados esperados'), { linha: 240, semRecuo: true }));
+      corpo.push(P('Palavras-chave: ' + (doc.palavras || lac('3 a 5 palavras-chave separadas por ponto e vírgula')), { linha: 240, semRecuo: true, antes: 240 }));
+
+      // 1 Introdução e justificativa
+      corpo.push(T1('1 Introdução e justificativa'));
+      if (est.delimitacao) corpo.push(P(fim(est.delimitacao)));
+      if (est.pergunta) corpo.push(P('Diante desse contexto, o projeto parte da seguinte pergunta: ' + fim(est.pergunta.replace(/^\s*/, ''))));
+      (just ? just.split(/\n\s*\n/) : [lac('Gere ou escreva a justificativa na seção "Justificativa e Referencial teórico"')]).forEach(x => corpo.push(P(x.trim())));
+
+      // 2 Referencial
+      corpo.push(T1('2 Referencial teórico'));
+      if (!refSecoes.length) corpo.push(P(lac('Gere ou escreva o referencial teórico')));
+      let n2 = 0;
+      refSecoes.forEach(s => {
+        if (s.subtitulo) corpo.push(T2('2.' + (++n2) + ' ' + s.subtitulo));
+        s.texto.split(/\n\s*\n/).filter(x => x.trim()).forEach(x => corpo.push(P(x.trim())));
+      });
+
+      // 3 Objetivos
+      corpo.push(T1('3 Objetivos'));
+      corpo.push(T2('3.1 Objetivo geral'));
+      corpo.push(P(fim(est.objetivo_geral) || lac('objetivo geral')));
+      corpo.push(T2('3.2 Objetivos específicos'));
+      const esp = (est.objetivos_especificos || []).filter(Boolean);
+      esp.forEach((o, i) => corpo.push(new Paragraph({ children: runs(String.fromCharCode(97 + i) + ') ' + fim(o.replace(/^[a-z]\)\s*/i, ''))), alignment: AlignmentType.JUSTIFIED, indent: { left: cm(1.25) }, spacing: { line: fmt.linha } })));
+      palavras += contarPalavras(esp.join(' '));
+
+      // 4 Metodologia
+      corpo.push(T1('4 Metodologia'));
+      corpo.push(P(lac('Apresente o tipo de pesquisa, a abordagem, a área de estudo e o recorte temporal, justificando as escolhas')));
+      matriz.forEach((m, i) => {
+        if (!Object.values(m).some(Boolean)) return;
+        corpo.push(T2('4.' + (i + 1) + ' Procedimentos para o objetivo ' + String.fromCharCode(97 + i)));
+        const partes = [];
+        if (m.dados) partes.push('Dados necessários: ' + fim(m.dados));
+        if (m.fontes) partes.push('Fontes: ' + fim(m.fontes));
+        if (m.coleta) partes.push('Coleta: ' + fim(m.coleta));
+        if (m.analise) partes.push('Análise: ' + fim(m.analise));
+        corpo.push(P(partes.join(' ')));
+      });
+      const cabM = ['Objetivo específico', 'Dados', 'Fontes', 'Coleta', 'Análise', 'Resultado esperado'];
+      corpo.push(legenda('Quadro 1 – Matriz de amarração metodológica'));
+      corpo.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+        new TableRow({ tableHeader: true, children: cabM.map(h => c(h, { bold: true, fill: 'E7E5E4', size: 18 })) }),
+        ...matriz.filter(m => Object.values(m).some(Boolean)).map(m => new TableRow({ cantSplit: true, children: ['objetivo', 'dados', 'fontes', 'coleta', 'analise', 'resultado'].map(k => c(m[k] || '', { size: 18 })) })),
+      ] }));
+      corpo.push(legenda('Fonte: elaborado pelo autor (' + (doc.ano || new Date().getFullYear()) + ').', true));
+
+      // 5 Resultados esperados
+      corpo.push(T1('5 Resultados esperados'));
+      const res = matriz.map(m => m.resultado).filter(Boolean);
+      if (res.length) {
+        corpo.push(P('Espera-se, ao final da pesquisa, obter os seguintes resultados:'));
+        res.forEach((r, i) => corpo.push(new Paragraph({ children: runs(String.fromCharCode(97 + i) + ') ' + fim(r)), alignment: AlignmentType.JUSTIFIED, indent: { left: cm(1.25) }, spacing: { line: fmt.linha } })));
+        palavras += contarPalavras(res.join(' '));
+      }
+      corpo.push(P(lac('Explique a relevância e o impacto científico, tecnológico, social ou de inovação desses resultados, como pede o edital'), { antes: 120 }));
+
+      // 6 Cronograma
+      corpo.push(T1('6 Cronograma de execução'));
+      if (cr && cr.linhas?.length) {
+        const rot = rotulosCrono(cr), larg = Math.max(2, Math.floor(70 / cr.colunas));
+        corpo.push(legenda('Quadro 2 – Cronograma de execução (' + (cr.passo === 3 ? 'trimestres' : 'bimestres') + ')'));
+        corpo.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+          new TableRow({ tableHeader: true, children: [c('Atividade', { bold: true, fill: 'E7E5E4', size: 16, w: 100 - larg * cr.colunas }), ...rot.map(r => c(r, { bold: true, fill: 'E7E5E4', size: 12, al: AlignmentType.CENTER, w: larg }))] }),
+          ...cr.linhas.map(l => new TableRow({ cantSplit: true, children: [c(l.atividade, { size: 16 }), ...rot.map((_, i) => c(l.marcados.includes(i) ? 'X' : '', { size: 16, al: AlignmentType.CENTER, fill: l.marcados.includes(i) ? 'D6D3D1' : undefined }))] })),
+        ] }));
+        corpo.push(legenda('Fonte: elaborado pelo autor (' + (doc.ano || new Date().getFullYear()) + ').', true));
+      } else corpo.push(P(lac('Monte o cronograma na seção Cronograma')));
+
+      // Referências
+      corpo.push(new Paragraph({ children: [new TextRun({ text: 'REFERÊNCIAS', bold: true })], alignment: AlignmentType.CENTER, spacing: { line: fmt.linha, before: 360, after: 360 }, keepNext: true }));
+      (refs.length ? refs : [lac('Referências dos artigos citados aparecem aqui depois de gerar os textos')]).forEach(r => {
+        palavras += contarPalavras(r);
+        corpo.push(new Paragraph({ children: runs(r), alignment: AlignmentType.LEFT, spacing: { line: 240, after: 240 } }));
+      });
+
+      const documento = new Document({
+        creator: editalCego() ? '' : (doc.nome || ''), lastModifiedBy: '', title: atual.titulo,
+        styles: { default: { document: { run: { font: fmt.fonte, size: MEIO }, paragraph: { spacing: { line: fmt.linha } } } } },
+        sections: [{
+          properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: cm(fmt.margens.top), bottom: cm(fmt.margens.bottom), left: cm(fmt.margens.left), right: cm(fmt.margens.right) } }, titlePage: true },
+          headers: { default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ children: [PageNumber.CURRENT], size: 20 })] })] }), first: new Header({ children: [] }) },
+          children: [...rosto, ...corpo],
+        }],
+      });
+      const tabelas = 1 + (cr && cr.linhas?.length ? 0.6 : 0) + matriz.length * 0.15;
+      return { documento, paginas: Math.ceil(2 + palavras / (fmt.linha >= 360 ? 330 : 480) + tabelas) };
+    }
+
+    $('btnDocx').addEventListener('click', async () => {
+      const btn = $('btnDocx'), st = $('dStatus');
+      btn.disabled = true; btn.textContent = 'Montando o arquivo…'; esconder(st);
+      try {
+        const D = await carregarDocx();
+        const { documento, paginas } = montarDocx(D);
+        const blob = await D.Packer.toBlob(documento);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'Projeto - ' + ($('pTitulo').value || 'pesquisa').replace(/[\\/:*?"<>|]/g, '').slice(0, 80) + '.docx';
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        const lim = atual.edital_resumo?.limite_paginas || '';
+        $('dEstimativa').textContent = 'Estimativa: cerca de ' + paginas + ' páginas' + (lim ? ' • edital: ' + lim.replace(/\s*\(.*$/, '') : '');
+        const { data } = await sb.from('projetos').update({ cronograma: coletarCronograma(), documento: coletarDocumento() }).eq('id', atual.id).select('*').single();
+        if (data) atual = data;
+        aviso(st, 'Arquivo gerado. Abra no Word, complete os trechos em amarelo e confira o número de páginas.', 'ok');
+      } catch (err) { aviso(st, err.message || 'Não foi possível gerar o arquivo.', 'erro'); }
+      btn.disabled = false; btn.textContent = 'Baixar .docx';
     });
 
     async function abrirProjeto(id) {
@@ -527,7 +831,7 @@
       const matriz = [...$('mCorpo').querySelectorAll('tr')].map(tr => {
         const o = {}; tr.querySelectorAll('textarea').forEach(t => { o[t.dataset.k] = t.value.trim(); }); return o;
       });
-      return { titulo: $('pTitulo').value.trim().slice(0, 200) || atual.titulo, estrutura: est, matriz };
+      return { titulo: $('pTitulo').value.trim().slice(0, 200) || atual.titulo, estrutura: est, matriz, cronograma: coletarCronograma(), documento: coletarDocumento() };
     }
 
     $('btnSalvar').addEventListener('click', async () => {
