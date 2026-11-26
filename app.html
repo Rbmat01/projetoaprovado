@@ -509,7 +509,7 @@
       if (!t) { $('sConteudo').classList.add('hidden'); return; }
       $('sConteudo').classList.remove('hidden');
       $('sJust').value = t.justificativa || '';
-      $('sRef').value = (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo.toUpperCase() + '\n\n' : '') + s.texto).join('\n\n');
+      $('sRef').value = (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo + '\n\n' : '') + s.texto).join('\n\n');
       const ul = $('sLacunas'); ul.innerHTML = ''; (t.lacunas || []).forEach(x => ul.appendChild(el('li', '', x)));
       $('blocoLacunas').classList.toggle('hidden', !(t.lacunas || []).length);
       const ol = $('sRefs'); ol.innerHTML = ''; (t.referencias || []).forEach(x => ol.appendChild(el('li', '', x)));
@@ -551,11 +551,11 @@
       const blocos = String(texto || '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
       const secoes = []; let cur = { subtitulo: '', texto: '' };
       for (const b of blocos) {
-        const ehTitulo = b.length <= 140 && !b.includes('\n') && b === b.toUpperCase() && /[A-ZÀ-Ú]/.test(b) && !/[.:;]$/.test(b);
+        const ehTitulo = b.length <= 140 && !b.includes('\n') && /[A-Za-zÀ-ú]/.test(b) && !/[.:;!?)\]]$/.test(b);
         if (ehTitulo) {
           if (cur.texto || cur.subtitulo) secoes.push(cur);
           const orig = (atual?.textos?.referencial || []).map(x => x.subtitulo || '').find(x => x && x.toUpperCase() === b);
-          cur = { subtitulo: orig || (b.charAt(0) + b.slice(1).toLowerCase()), texto: '' };
+          cur = { subtitulo: orig || (b === b.toUpperCase() ? b.charAt(0) + b.slice(1).toLowerCase() : b), texto: '' };
         }
         else cur.texto += (cur.texto ? '\n\n' : '') + b;
       }
@@ -675,7 +675,7 @@
       const est = coletar().estrutura, matriz = coletar().matriz, doc = coletarDocumento(), cr = coletarCronograma();
       const t = atual.textos || {};
       const just = ($('sJust').value || t.justificativa || '').trim();
-      const refSecoes = separarReferencial($('sRef').value || (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo.toUpperCase() + '\n\n' : '') + s.texto).join('\n\n'));
+      const refSecoes = separarReferencial($('sRef').value || (t.referencial || []).map(s => (s.subtitulo ? s.subtitulo + '\n\n' : '') + s.texto).join('\n\n'));
       const refs = t.referencias || [];
       let palavras = 0;
       const runs = (texto, extra = {}) => {
