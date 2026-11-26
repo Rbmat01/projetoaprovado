@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área do Projeto | ProjetoAprovado</title>
+  <meta name="robots" content="noindex" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], serif: ['"Newsreader"', 'Georgia', 'serif'], mono: ['"JetBrains Mono"', 'monospace'] },
+      colors: { paper: '#FAF9F6', oxford: { 950: '#090D16', 900: '#0F172A', 800: '#1E293B', 700: '#334155' }, brass: { 50: '#FFFBEB', 100: '#FEF3C7', 600: '#D97706', 700: '#B45309' } }
+    } } };
+  </script>
+  <style>
+    body { background: #FAF9F6; color: #111827; }
+    .campo { width: 100%; border-radius: .5rem; background: #fff; border: 1px solid #d6d3d1; padding: .6rem .8rem; font-size: .875rem; line-height: 1.5; }
+    .campo:focus { outline: none; box-shadow: 0 0 0 2px #0F172A; border-color: #0F172A; }
+    .rotulo { display: block; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #64748b; margin-bottom: .35rem; }
+    .btn { border-radius: .6rem; padding: .65rem 1.1rem; font-weight: 600; font-size: .875rem; transition: .15s; }
+    .btn-escuro { background: #0F172A; color: #fff; } .btn-escuro:hover { background: #1E293B; }
+    .btn-claro { border: 1px solid #0F172A; color: #0F172A; } .btn-claro:hover { background: #0F172A; color: #fff; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    textarea.campo { resize: vertical; }
+    .matriz td { vertical-align: top; padding: .35rem; }
+    .matriz textarea { min-height: 7rem; font-size: .8rem; }
+    @media (max-width: 900px) {
+      .matriz thead { display: none; }
+      .matriz tr { display: block; border-top: 1px solid #e7e5e4; padding: .75rem 0; }
+      .matriz td { display: block; }
+      .matriz td::before { content: attr(data-l); display: block; font-family: "JetBrains Mono", monospace; font-size: 10px; text-transform: uppercase; color: #64748b; margin-bottom: .2rem; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <header class="sticky top-0 z-40 bg-[#FAF9F6]/90 backdrop-blur border-b border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+      <a href="./" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-oxford-900 text-amber-400 flex items-center justify-center font-serif font-bold text-xl">§</div>
+        <span class="font-serif font-bold text-xl text-oxford-900">Projeto<span class="text-brass-700 italic">Aprovado</span></span>
+      </a>
+      <div id="barraUsuario" class="hidden items-center gap-3 text-sm">
+        <span id="emailUsuario" class="hidden sm:inline text-slate-600"></span>
+        <button id="btnSair" class="btn btn-claro py-1.5">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+
+    <!-- Login -->
+    <section id="telaLogin" class="hidden max-w-md mx-auto">
+      <h1 class="font-serif text-3xl font-bold text-oxford-900 mb-2">Entrar na Área do Projeto</h1>
+      <p class="text-slate-600 text-sm mb-6">Informe seu e-mail. Enviaremos um link de acesso, sem senha.</p>
+      <form id="formLogin" class="space-y-4">
+        <div>
+          <label class="rotulo" for="emailLogin">E-mail</label>
+          <input id="emailLogin" type="email" required autocomplete="email" class="campo" placeholder="pesquisador@email.com" />
+        </div>
+        <button class="btn btn-escuro w-full" type="submit">Enviar link de acesso</button>
+      </form>
+      <p id="msgLogin" class="hidden mt-4 text-sm rounded-lg p-3"></p>
+    </section>
+
+    <!-- Sem passe -->
+    <section id="telaSemPasse" class="hidden max-w-xl mx-auto text-center">
+      <h1 class="font-serif text-3xl font-bold text-oxford-900 mb-3">Sua conta ainda não tem um passe ativo</h1>
+      <p class="text-slate-600 mb-6">Os passes completos ainda não estão à venda. Você já está cadastrado e será avisado no lançamento. Enquanto isso, você pode gerar uma estrutura gratuita na página inicial.</p>
+      <a href="./#testar-gratis" class="btn btn-escuro inline-block">Gerar estrutura grátis</a>
+    </section>
+
+    <!-- Lista de projetos -->
+    <section id="telaLista" class="hidden">
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+        <div>
+          <h1 class="font-serif text-3xl font-bold text-oxford-900">Meus projetos</h1>
+          <p id="infoPasse" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <button id="btnNovo" class="btn btn-escuro">+ Novo projeto</button>
+      </div>
+      <div id="listaProjetos" class="grid gap-3"></div>
+      <p id="listaVazia" class="hidden text-slate-500 text-sm">Você ainda não tem projetos. Comece por "Novo projeto".</p>
+
+      <form id="formNovo" class="hidden mt-8 bg-white border border-stone-200 rounded-2xl p-6 space-y-4">
+        <h2 class="font-serif text-2xl font-bold text-oxford-900">Novo projeto</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="rotulo" for="nTitulo">Título provisório</label><input id="nTitulo" required maxlength="200" class="campo" /></div>
+          <div><label class="rotulo" for="nNivel">Nível</label>
+            <select id="nNivel" class="campo"><option value="Mestrado">Mestrado (24 meses)</option><option value="Doutorado">Doutorado (48 meses)</option></select></div>
+        </div>
+        <div><label class="rotulo" for="nArea">Grande área (CAPES)</label><input id="nArea" required maxlength="120" class="campo" placeholder="Ex: Educação, Ciências Ambientais..." /></div>
+        <div><label class="rotulo" for="nTema">Tema / ideia inicial</label><textarea id="nTema" required maxlength="2000" rows="3" class="campo"></textarea></div>
+        <div><label class="rotulo" for="nEdital">Edital do programa (PDF, até 10 MB)</label>
+          <input id="nEdital" type="file" accept="application/pdf,.pdf" required class="campo" /></div>
+        <div class="flex flex-wrap gap-3">
+          <button class="btn btn-escuro" type="submit" id="btnCriar">Criar e gerar estrutura</button>
+          <button class="btn btn-claro" type="button" id="btnCancelarNovo">Cancelar</button>
+        </div>
+        <p class="text-xs text-slate-500">A geração leva até 1 minuto. Cada projeto usa 1 edital do seu passe e pode ser gerado de novo até 2 vezes.</p>
+      </form>
+    </section>
+
+    <!-- Projeto -->
+    <section id="telaProjeto" class="hidden">
+      <button id="btnVoltar" class="text-sm text-slate-600 hover:text-oxford-900 mb-4">← Meus projetos</button>
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div class="min-w-0">
+          <input id="pTitulo" class="font-serif text-3xl font-bold text-oxford-900 bg-transparent border-b border-transparent focus:border-stone-300 focus:outline-none w-full" maxlength="200" />
+          <p id="pMeta" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="btnSalvar" class="btn btn-escuro">Salvar alterações</button>
+          <button id="btnRegerar" class="btn btn-claro">Gerar de novo</button>
+        </div>
+      </div>
+      <p id="pStatus" class="hidden mb-6 text-sm rounded-lg p-3"></p>
+
+      <div id="pConteudo" class="space-y-8">
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-3">O que o edital exige</h2>
+          <div id="pEdital" class="bg-white border border-stone-200 rounded-xl p-5 text-sm space-y-3"></div>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-3">Estrutura</h2>
+          <div class="bg-white border border-stone-200 rounded-xl p-5 space-y-4">
+            <div><label class="rotulo" for="eLinha">Linha de pesquisa sugerida</label><textarea id="eLinha" rows="2" class="campo"></textarea></div>
+            <div><label class="rotulo" for="eDelim">1. Delimitação do tema</label><textarea id="eDelim" rows="3" class="campo"></textarea></div>
+            <div><label class="rotulo" for="ePerg">2. Pergunta-problema</label><textarea id="ePerg" rows="2" class="campo"></textarea></div>
+            <div><label class="rotulo" for="eGeral">3. Objetivo geral</label><textarea id="eGeral" rows="2" class="campo"></textarea></div>
+            <div><label class="rotulo">4. Objetivos específicos</label>
+              <div class="space-y-2"><textarea id="eEsp0" rows="2" class="campo"></textarea><textarea id="eEsp1" rows="2" class="campo"></textarea><textarea id="eEsp2" rows="2" class="campo"></textarea></div></div>
+            <div id="blocoAjustes"><label class="rotulo">Ajustes feitos no tema</label><p id="eAjustes" class="text-sm text-slate-700"></p></div>
+            <div id="blocoPontos"><label class="rotulo">Pontos para conversar com o orientador</label><ul id="ePontos" class="list-disc pl-5 text-sm text-slate-700 space-y-1"></ul></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-2xl font-bold text-oxford-900 mb-1">Matriz de Amarração Metodológica</h2>
+          <p class="text-sm text-slate-500 mb-3">Cada linha liga um objetivo específico aos dados, à coleta, à análise e ao resultado esperado. Edite à vontade e salve.</p>
+          <div class="bg-white border border-stone-200 rounded-xl p-3 overflow-x-auto">
+            <table class="matriz w-full text-sm min-w-0">
+              <thead><tr class="text-left font-mono text-[11px] uppercase text-slate-500">
+                <th class="p-2 w-[20%]">Objetivo específico</th><th class="p-2">Dados necessários</th><th class="p-2">Fontes / participantes</th>
+                <th class="p-2">Técnica de coleta</th><th class="p-2">Técnica de análise</th><th class="p-2">Resultado esperado</th></tr></thead>
+              <tbody id="mCorpo"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <p class="text-xs text-slate-500 border-t border-stone-200 pt-4">Conteúdo gerado por IA a partir do edital e do tema informados. Confira cada regra no edital original e revise com o seu futuro orientador. A pesquisa e a redação final são suas.</p>
+      </div>
+    </section>
+
+    <p id="msgGeral" class="hidden mt-6 text-sm rounded-lg p-3"></p>
+  </main>
+
+  <script>
+  {
+    const SUPABASE_URL = 'https://nomnxrazjypvulmtunjo.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_ywC3iAIskK6wpTCMebZDxQ_sS67BSPL';
+    const FUNCAO = SUPABASE_URL + '/functions/v1/projeto-gerar';
+    const MAX_PDF = 10 * 1024 * 1024;
+    const COLUNAS = [['dados', 'Dados necessários'], ['fontes', 'Fontes / participantes'], ['coleta', 'Técnica de coleta'], ['analise', 'Técnica de análise'], ['resultado', 'Resultado esperado']];
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, detectSessionInUrl: true } });
+    const $ = id => document.getElementById(id);
+    const telas = ['telaLogin', 'telaSemPasse', 'telaLista', 'telaProjeto'];
+    let usuario = null, acesso = null, atual = null;
+
+    function mostrar(tela) { telas.forEach(t => $(t).classList.toggle('hidden', t !== tela)); window.scrollTo(0, 0); }
+    function aviso(el, texto, tipo) {
+      el.textContent = texto;
+      el.className = 'mt-4 text-sm rounded-lg p-3 ' + (tipo === 'erro' ? 'bg-red-50 border border-red-200 text-red-900' : tipo === 'ok' ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-amber-50 border border-amber-200 text-amber-900');
+    }
+    const esconder = el => el.classList.add('hidden');
+    const tem = v => v != null && String(v).trim() !== '' && String(v).toLowerCase() !== 'null';
+    const dataBR = s => new Date(s).toLocaleDateString('pt-BR');
+    function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = String(txt); return e; }
+
+    // ---------- Login ----------
+    $('formLogin').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = $('emailLogin').value.trim();
+      const btn = e.submitter; btn.disabled = true;
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
+      btn.disabled = false;
+      if (error) aviso($('msgLogin'), 'Não foi possível enviar o link: ' + error.message, 'erro');
+      else aviso($('msgLogin'), 'Pronto! Abra o e-mail que enviamos para ' + email + ' e clique no link de acesso. Confira também o spam.', 'ok');
+    });
+    $('btnSair').addEventListener('click', async () => { await sb.auth.signOut(); location.href = location.pathname; });
+
+    async function iniciar(session) {
+      usuario = session?.user ?? null;
+      $('barraUsuario').classList.toggle('hidden', !usuario);
+      $('barraUsuario').classList.toggle('flex', !!usuario);
+      if (!usuario) return mostrar('telaLogin');
+      $('emailUsuario').textContent = usuario.email;
+      const { data } = await sb.from('acessos').select('*').maybeSingle();
+      acesso = data && new Date(data.valido_ate) > new Date() ? data : null;
+      if (!acesso) return mostrar('telaSemPasse');
+      $('infoPasse').textContent = 'Passe ' + ({ beta: 'Beta', edital_unico: 'Edital Único', pesquisador: 'Pesquisador' }[acesso.plano] || acesso.plano) +
+        ' • até ' + acesso.editais_max + ' edital(is) • válido até ' + dataBR(acesso.valido_ate);
+      const id = new URLSearchParams(location.search).get('projeto');
+      if (id) abrirProjeto(id); else listar();
+    }
+
+    // ---------- Lista ----------
+    async function listar() {
+      history.replaceState(null, '', location.pathname);
+      mostrar('telaLista');
+      const { data, error } = await sb.from('projetos').select('id,titulo,nivel,area,status,updated_at').order('updated_at', { ascending: false });
+      const lista = $('listaProjetos'); lista.innerHTML = '';
+      if (error) return aviso($('msgGeral'), 'Erro ao carregar projetos: ' + error.message, 'erro');
+      $('listaVazia').classList.toggle('hidden', data.length > 0);
+      const rotulo = { rascunho: 'Rascunho', gerando: 'Gerando…', pronto: 'Pronto', erro: 'Erro na geração' };
+      data.forEach(p => {
+        const b = el('button', 'text-left bg-white border border-stone-200 hover:border-oxford-900/40 rounded-xl p-4 flex flex-wrap items-center justify-between gap-2');
+        const esq = el('div', 'min-w-0');
+        esq.appendChild(el('div', 'font-semibold text-oxford-900', p.titulo));
+        esq.appendChild(el('div', 'text-xs text-slate-500', p.nivel + ' • ' + p.area + ' • atualizado em ' + dataBR(p.updated_at)));
+        b.appendChild(esq);
+        b.appendChild(el('span', 'text-xs font-mono px-2 py-1 rounded bg-stone-100 text-slate-700', rotulo[p.status] || p.status));
+        b.addEventListener('click', () => abrirProjeto(p.id));
+        lista.appendChild(b);
+      });
+    }
+    $('btnNovo').addEventListener('click', () => { $('formNovo').classList.remove('hidden'); $('nTitulo').focus(); });
+    $('btnCancelarNovo').addEventListener('click', () => $('formNovo').classList.add('hidden'));
+
+    async function chamarGeracao(projetoId) {
+      const { data: { session } } = await sb.auth.getSession();
+      const r = await fetch(FUNCAO, { method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ projeto_id: projetoId }) });
+      const j = await r.json().catch(() => null);
+      if (!j || !j.ok) throw new Error(j?.motivo || 'Erro ao gerar. Tente de novo em instantes.');
+      return j.projeto;
+    }
+
+    $('formNovo').addEventListener('submit', async e => {
+      e.preventDefault();
+      esconder($('msgGeral'));
+      const arq = $('nEdital').files[0];
+      if (!arq) return;
+      if (arq.size > MAX_PDF) return aviso($('msgGeral'), 'O PDF passa de 10 MB. Envie só as páginas sobre o projeto de pesquisa.', 'erro');
+      const btn = $('btnCriar'); btn.disabled = true; btn.textContent = 'Criando projeto…';
+      try {
+        const { data: p, error } = await sb.from('projetos').insert({
+          titulo: $('nTitulo').value.trim(), nivel: $('nNivel').value, area: $('nArea').value.trim(), tema: $('nTema').value.trim(), edital_nome: arq.name.slice(0, 200)
+        }).select('id').single();
+        if (error) throw new Error(error.message);
+        btn.textContent = 'Enviando o edital…';
+        const up = await sb.storage.from('editais').upload(usuario.id + '/' + p.id + '.pdf', arq, { upsert: true, contentType: 'application/pdf' });
+        if (up.error) throw new Error('Falha ao enviar o edital: ' + up.error.message);
+        btn.textContent = 'Lendo o edital e montando a matriz… (até 1 minuto)';
+        try { await chamarGeracao(p.id); }
+        catch (err) { aviso($('msgGeral'), err.message + ' O projeto foi salvo; abra-o para tentar de novo.', 'erro'); }
+        $('formNovo').reset(); $('formNovo').classList.add('hidden');
+        abrirProjeto(p.id);
+      } catch (err) {
+        aviso($('msgGeral'), err.message, 'erro');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Criar e gerar estrutura';
+      }
+    });
+
+    // ---------- Projeto ----------
+    function linhaEdital(box, titulo, valor) {
+      const d = el('div');
+      d.appendChild(el('div', 'rotulo', titulo));
+      const vazio = Array.isArray(valor) ? valor.filter(tem).length === 0 : !tem(valor);
+      if (vazio) d.appendChild(el('p', 'text-slate-500', 'Não informado no edital'));
+      else if (Array.isArray(valor)) { const ul = el('ul', 'list-disc pl-5 space-y-1'); valor.filter(tem).forEach(v => ul.appendChild(el('li', '', v))); d.appendChild(ul); }
+      else d.appendChild(el('p', '', valor));
+      box.appendChild(d);
+    }
+
+    function preencher(p) {
+      atual = p;
+      history.replaceState(null, '', location.pathname + '?projeto=' + encodeURIComponent(p.id));
+      $('pTitulo').value = p.titulo;
+      $('pMeta').textContent = p.nivel + ' • ' + p.area + (p.edital_nome ? ' • edital: ' + p.edital_nome : '') + ' • gerações usadas: ' + p.geracoes + ' de 3';
+      const st = $('pStatus'); esconder(st);
+      if (p.status === 'gerando') aviso(st, 'Este projeto está sendo gerado. Atualize a página em instantes.', 'info');
+      if (p.status === 'erro' || p.status === 'rascunho') aviso(st, 'A estrutura ainda não foi gerada. Clique em "Gerar de novo".', 'info');
+      $('btnRegerar').disabled = p.geracoes >= 3 || p.status === 'gerando';
+
+      const ed = p.edital_resumo || {};
+      const box = $('pEdital'); box.innerHTML = '';
+      if (tem(ed.programa)) box.appendChild(el('p', 'font-semibold', ed.programa));
+      linhaEdital(box, 'Limite de páginas', ed.limite_paginas);
+      linhaEdital(box, 'Seções obrigatórias', ed.secoes_obrigatorias || []);
+      linhaEdital(box, 'Formatação', ed.formatacao);
+      linhaEdital(box, 'Avaliação cega / identificação', ed.avaliacao_cega);
+      linhaEdital(box, 'Linhas de pesquisa', ed.linhas_pesquisa || []);
+      linhaEdital(box, 'Outras exigências', ed.outras_exigencias || []);
+
+      const e = p.estrutura || {};
+      $('eLinha').value = e.linha_sugerida || ''; $('eDelim').value = e.delimitacao || ''; $('ePerg').value = e.pergunta || ''; $('eGeral').value = e.objetivo_geral || '';
+      const esp = Array.isArray(e.objetivos_especificos) ? e.objetivos_especificos.map(o => typeof o === 'string' ? o : (o?.texto || '')) : [];
+      [0, 1, 2].forEach(i => { $('eEsp' + i).value = esp[i] || ''; });
+      $('eAjustes').textContent = e.ajustes_feitos || ''; $('blocoAjustes').classList.toggle('hidden', !tem(e.ajustes_feitos));
+      const ul = $('ePontos'); ul.innerHTML = ''; (e.pontos_orientador || []).filter(tem).forEach(t => ul.appendChild(el('li', '', t)));
+      $('blocoPontos').classList.toggle('hidden', !(e.pontos_orientador || []).length);
+
+      const corpo = $('mCorpo'); corpo.innerHTML = '';
+      const linhas = Array.isArray(p.matriz) && p.matriz.length ? p.matriz : [{}, {}, {}];
+      linhas.forEach((m, i) => {
+        const tr = el('tr', 'border-t border-stone-100');
+        const td0 = el('td'); td0.dataset.l = 'Objetivo específico';
+        const t0 = el('textarea', 'campo bg-stone-50'); t0.value = m.objetivo || (esp[i] ? String.fromCharCode(97 + i) + ') ' + esp[i] : ''); t0.dataset.k = 'objetivo'; td0.appendChild(t0); tr.appendChild(td0);
+        COLUNAS.forEach(([k, l]) => { const td = el('td'); td.dataset.l = l; const t = el('textarea', 'campo'); t.value = m[k] || ''; t.dataset.k = k; td.appendChild(t); tr.appendChild(td); });
+        corpo.appendChild(tr);
+      });
+      mostrar('telaProjeto');
+    }
+
+    async function abrirProjeto(id) {
+      esconder($('msgGeral'));
+      const { data, error } = await sb.from('projetos').select('*').eq('id', id).maybeSingle();
+      if (error || !data) { aviso($('msgGeral'), 'Projeto não encontrado.', 'erro'); return listar(); }
+      preencher(data);
+    }
+
+    function coletar() {
+      const est = Object.assign({}, atual.estrutura || {}, {
+        linha_sugerida: $('eLinha').value.trim(), delimitacao: $('eDelim').value.trim(), pergunta: $('ePerg').value.trim(), objetivo_geral: $('eGeral').value.trim(),
+        objetivos_especificos: [0, 1, 2].map(i => $('eEsp' + i).value.trim())
+      });
+      const matriz = [...$('mCorpo').querySelectorAll('tr')].map(tr => {
+        const o = {}; tr.querySelectorAll('textarea').forEach(t => { o[t.dataset.k] = t.value.trim(); }); return o;
+      });
+      return { titulo: $('pTitulo').value.trim().slice(0, 200) || atual.titulo, estrutura: est, matriz };
+    }
+
+    $('btnSalvar').addEventListener('click', async () => {
+      const btn = $('btnSalvar'); btn.disabled = true; btn.textContent = 'Salvando…';
+      const { data, error } = await sb.from('projetos').update(coletar()).eq('id', atual.id).select('*').single();
+      btn.disabled = false; btn.textContent = 'Salvar alterações';
+      if (error) return aviso($('pStatus'), 'Erro ao salvar: ' + error.message, 'erro');
+      atual = data; aviso($('pStatus'), 'Alterações salvas.', 'ok');
+    });
+
+    $('btnRegerar').addEventListener('click', async () => {
+      const restantes = 3 - atual.geracoes;
+      const caixa = $('pStatus');
+      if (!$('btnRegerar').dataset.confirmar) {
+        $('btnRegerar').dataset.confirmar = '1';
+        $('btnRegerar').textContent = 'Confirmar: refazer tudo';
+        return aviso(caixa, 'Gerar de novo substitui a estrutura e a matriz atuais pelas novas (restam ' + restantes + ' geração(ões) neste projeto). Clique em "Confirmar" para continuar.', 'info');
+      }
+      delete $('btnRegerar').dataset.confirmar;
+      const btn = $('btnRegerar'); btn.disabled = true; btn.textContent = 'Gerando… (até 1 minuto)';
+      try { preencher(await chamarGeracao(atual.id)); aviso($('pStatus'), 'Estrutura e matriz geradas de novo.', 'ok'); }
+      catch (err) { aviso(caixa, err.message, 'erro'); }
+      finally { btn.textContent = 'Gerar de novo'; btn.disabled = atual.geracoes >= 3; }
+    });
+
+    $('btnVoltar').addEventListener('click', listar);
+
+    let ultimoId;
+    sb.auth.onAuthStateChange((evento, session) => {
+      const id = session?.user?.id ?? null;
+      if (evento === 'INITIAL_SESSION' || id !== ultimoId) {
+        ultimoId = id;
+        setTimeout(() => iniciar(session), 0); // fora do callback de auth, para não travar o cliente
+      }
+    });
+  }
+  </script>
+</body>
+</html>
