@@ -552,7 +552,11 @@
       const secoes = []; let cur = { subtitulo: '', texto: '' };
       for (const b of blocos) {
         const ehTitulo = b.length <= 140 && !b.includes('\n') && b === b.toUpperCase() && /[A-ZÀ-Ú]/.test(b) && !/[.:;]$/.test(b);
-        if (ehTitulo) { if (cur.texto || cur.subtitulo) secoes.push(cur); cur = { subtitulo: b.charAt(0) + b.slice(1).toLowerCase(), texto: '' }; }
+        if (ehTitulo) {
+          if (cur.texto || cur.subtitulo) secoes.push(cur);
+          const orig = (atual?.textos?.referencial || []).map(x => x.subtitulo || '').find(x => x && x.toUpperCase() === b);
+          cur = { subtitulo: orig || (b.charAt(0) + b.slice(1).toLowerCase()), texto: '' };
+        }
         else cur.texto += (cur.texto ? '\n\n' : '') + b;
       }
       if (cur.texto || cur.subtitulo) secoes.push(cur);
@@ -572,6 +576,7 @@
         return r(ini) + '–' + r(fim) + '/' + String(a + Math.floor(fim / 12)).slice(2);
       });
     }
+    const curto = (t, n) => { t = String(t || '').trim().replace(/[.;]$/, ''); if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, Math.max(c.lastIndexOf(' '), n * 0.6)).replace(/(\s+\S{1,3})+$/, '').replace(/[,;:]$/, '') + '…'; };
     function cronoSugerido() {
       const f = formatoCrono(), c = f.colunas, faixa = (a, b) => { const o = []; for (let i = Math.max(0, a); i <= Math.min(c - 1, b); i++) o.push(i); return o; };
       const esp = [0, 1, 2].map(i => $('eEsp' + i).value.trim()).filter(Boolean);
@@ -582,7 +587,7 @@
       ];
       esp.forEach((o, i) => {
         const ini = Math.floor(c * 0.25) + i * Math.max(1, Math.floor(c * 0.15));
-        linhas.push({ atividade: 'Objetivo ' + (i + 1) + ': ' + o.replace(/^[a-z]\)\s*/i, '').slice(0, 90), marcados: faixa(ini, Math.min(ini + Math.max(2, Math.floor(c * 0.3)) - 1, c - 3)) });
+        linhas.push({ atividade: 'Objetivo ' + (i + 1) + ': ' + curto(o.replace(/^[a-z]\)\s*/i, ''), 70), marcados: faixa(ini, Math.min(ini + Math.max(2, Math.floor(c * 0.3)) - 1, c - 3)) });
       });
       linhas.push({ atividade: 'Exame de qualificação', marcados: [Math.floor(c * 0.5)] });
       linhas.push({ atividade: 'Redação da ' + tese, marcados: faixa(Math.floor(c * 0.66), c - 1) });
@@ -692,7 +697,8 @@
 
       // Folha de rosto
       const ed = atual.edital_resumo || {};
-      const programa = (ed.programa || '').split(/[(–—]/)[0].trim();
+      const progNome = (ed.programa || '').match(/Programa de P[óo]s-Gradua[çc][ãa]o[^,(;–—]*/i);
+      const programa = (progNome ? progNome[0] : (ed.programa || '').split(/[(]/)[0]).trim().replace(/[\s,–—-]+$/, '');
       const rosto = [];
       const centro = (txt, o = {}) => new Paragraph({ children: runs(txt, { bold: o.bold }), alignment: AlignmentType.CENTER, spacing: { line: fmt.linha, before: o.antes ?? 0, after: 0 } });
       if (programa) rosto.push(centro(programa.toUpperCase(), { bold: true }));
