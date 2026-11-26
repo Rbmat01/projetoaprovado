@@ -115,6 +115,7 @@
         <div class="flex flex-wrap gap-2">
           <button id="btnSalvar" class="btn btn-escuro">Salvar alterações</button>
           <button id="btnRegerar" class="btn btn-claro">Gerar de novo</button>
+          <button id="btnApagar" class="btn border border-red-300 text-red-700 hover:bg-red-600 hover:text-white hover:border-red-600">Apagar projeto</button>
         </div>
       </div>
       <p id="pStatus" class="hidden mb-6 text-sm rounded-lg p-3"></p>
@@ -357,6 +358,26 @@
       try { preencher(await chamarGeracao(atual.id)); aviso($('pStatus'), 'Estrutura e matriz geradas de novo.', 'ok'); }
       catch (err) { aviso(caixa, err.message, 'erro'); }
       finally { btn.textContent = 'Gerar de novo'; btn.disabled = atual.geracoes >= 3; }
+    });
+
+    $('btnApagar').addEventListener('click', async () => {
+      const btn = $('btnApagar');
+      if (!btn.dataset.confirmar) {
+        btn.dataset.confirmar = '1';
+        btn.textContent = 'Confirmar: apagar de vez';
+        aviso($('pStatus'), 'Apagar remove este projeto, a estrutura, a matriz e o PDF do edital. Não dá para desfazer. A vaga de edital do seu passe volta a ficar livre. Clique em "Confirmar" para apagar.', 'erro');
+        setTimeout(() => { if (btn.dataset.confirmar) { delete btn.dataset.confirmar; btn.textContent = 'Apagar projeto'; } }, 10000);
+        return;
+      }
+      delete btn.dataset.confirmar;
+      btn.disabled = true; btn.textContent = 'Apagando…';
+      const id = atual.id, titulo = atual.titulo;
+      await sb.storage.from('editais').remove([usuario.id + '/' + id + '.pdf']); // se não existir, segue
+      const { error } = await sb.from('projetos').delete().eq('id', id);
+      btn.disabled = false; btn.textContent = 'Apagar projeto';
+      if (error) return aviso($('pStatus'), 'Não foi possível apagar: ' + error.message, 'erro');
+      await listar();
+      aviso($('msgGeral'), 'Projeto "' + titulo + '" apagado.', 'ok');
     });
 
     $('btnVoltar').addEventListener('click', listar);
