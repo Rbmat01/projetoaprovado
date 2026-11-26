@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProjetoAprovado | Estruture seu Projeto de Mestrado e Doutorado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            paper: '#FAF9F6',
+            ink: '#111827',
+            oxford: {
+              950: '#090D16',
+              900: '#0F172A',
+              800: '#1E293B',
+              700: '#334155',
+            },
+            brass: {
+              50: '#FFFBEB',
+              100: '#FEF3C7',
+              600: '#D97706',
+              700: '#B45309',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FAF9F6;
+      color: #111827;
+    }
+    /* Padrão sutil de papel acadêmico / caderno de pesquisa */
+    .academic-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    }
+    /* Estilização elegante para detalhes/FAQ */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-brass-100 selection:text-oxford-900">
+
+  <!-- Barra Superior de Rigor Metodológico -->
+  <div class="bg-oxford-900 text-slate-300 text-xs py-2 px-4 text-center border-b border-oxford-800">
+    <span class="font-mono text-amber-400 mr-2">[ABNT NBR 15287]</span>
+    Alinhado aos critérios de avaliação das bancas de Pós-Graduação Stricto Sensu (CAPES)
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-stone-200/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 py-3.5 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-oxford-900 text-amber-400 flex items-center justify-center font-serif font-bold text-xl shadow-sm border border-oxford-800 group-hover:border-amber-500/50 transition">
+          §
+        </div>
+        <div class="flex flex-col">
+          <span class="font-serif font-bold text-xl tracking-tight text-oxford-900 leading-none">
+            Projeto<span class="text-brass-700 italic">Aprovado</span>
+          </span>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500 mt-0.5">Rigor & Método</span>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+        <a href="#diferenciais" class="hover:text-oxford-900 transition">Por que não IA comum?</a>
+        <a href="#como-funciona" class="hover:text-oxford-900 transition">Metodologia em 4 passos</a>
+        <a href="#precos" class="hover:text-oxford-900 transition">Passes</a>
+        <a href="#faq" class="hover:text-oxford-900 transition">Dúvidas</a>
+      </nav>
+
+      <a href="#testar-gratis" class="bg-oxford-900 hover:bg-oxford-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition shadow-sm flex items-center gap-2 border border-oxford-800">
+        <span>Gerar Matriz Grátis</span>
+        <span class="text-amber-400">→</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-14 pb-24 px-4 sm:px-6 academic-grid border-b border-stone-200 overflow-hidden">
+    <!-- Glow radial sutil -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#FAF9F6]/60 to-[#FAF9F6] pointer-events-none"></div>
+
+    <div class="relative max-w-4xl mx-auto text-center">
+      <!-- Badge Institucional -->
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-medium bg-white text-oxford-800 border border-stone-300 shadow-xs mb-8">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>Desenvolvido para candidatos de <strong>Mestrado e Doutorado</strong></span>
+      </div>
+
+      <!-- Título Editorial -->
+      <h1 class="font-serif text-4xl sm:text-6xl font-bold text-oxford-900 tracking-tight leading-[1.12] mb-6">
+        Estruture seu Projeto de Pesquisa alinhado ao edital em <span class="italic text-brass-700 underline decoration-amber-300/80 decoration-2 underline-offset-4">um fim de semana</span>.
+      </h1>
+
+      <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed font-normal">
+        Saia da página em branco sem alucinações de IA. Construa sua <strong class="text-oxford-900 font-semibold">Matriz de Amarração Metodológica</strong>, embasada exclusivamente nos seus artigos em PDF e formatada nas normas da ABNT.
+      </p>
+
+      <!-- Formulário Estilo "Ficha Catalográfica / Protocolo de Pesquisa" -->
+      <div id="testar-gratis" class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl shadow-slate-900/5 border border-stone-200/90 text-left overflow-hidden">
+        <!-- Cabeçalho do Card -->
+        <div class="bg-oxford-900 px-6 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-2 border-b border-oxford-800">
+          <div class="flex items-center gap-2.5">
+            <span class="font-mono text-xs text-amber-400 bg-oxford-800 px-2 py-0.5 rounded border border-oxford-700">PROTOCOLO 01</span>
+            <h2 class="font-serif font-semibold text-lg text-white">Espinha Dorsal do Projeto</h2>
+          </div>
+          <span class="text-xs font-mono font-medium text-emerald-300 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-full">
+            ● Acesso Gratuito
+          </span>
+        </div>
+
+        <div class="p-6 sm:p-8">
+          <p class="text-sm text-slate-600 mb-6 pb-5 border-b border-stone-100 leading-relaxed">
+            Preencha os parâmetros abaixo para receber sua <strong class="text-oxford-900">Pergunta Problema + Objetivo Geral + 3 Objetivos Específicos</strong> calibrados para o tempo do seu programa.
+          </p>
+
+          <form id="leadForm" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block font-mono text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  01. Nível Pretendido
+                </label>
+                <select id="nivel" name="nivel" required class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2.5 text-sm text-oxford-900 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-oxford-900 focus:border-oxford-900 transition">
+                  <option value="Mestrado">Mestrado (24 meses)</option>
+                  <option value="Doutorado">Doutorado (48 meses)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-mono text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  02. Grande Área (CAPES)
+                </label>
+                <input type="text" id="area" name="area" maxlength="120" required placeholder="Ex: Educação, Saúde, Direito..." class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2.5 text-sm text-oxford-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-oxford-900 focus:border-oxford-900 transition" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                03. Delimitação Inicial do Tema / Ideia
+              </label>
+              <textarea id="tema" name="tema" rows="2" maxlength="2000" required placeholder="Ex: Impacto do uso de telas no desenvolvimento da linguagem infantil na educação básica..." class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2.5 text-sm text-oxford-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-oxford-900 focus:border-oxford-900 transition"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                04. WhatsApp ou E-mail Institucional/Pessoal
+              </label>
+              <input type="text" id="contato" name="contato" maxlength="160" required placeholder="(00) 90000-0000 ou pesquisador@email.com" class="w-full rounded-lg bg-[#FAF9F6] border border-stone-300 px-3.5 py-2.5 text-sm text-oxford-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-oxford-900 focus:border-oxford-900 transition" />
+            </div>
+
+            <!-- Anti-spam (honeypot): humanos não veem este campo -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" aria-hidden="true" />
+
+            <label class="flex items-start gap-2.5 text-xs text-slate-600 leading-relaxed cursor-pointer">
+              <input type="checkbox" id="consentimento" name="consentimento" required class="mt-0.5 w-4 h-4 accent-[#0F172A]" />
+              <span>Autorizo o uso destes dados para receber a minha Matriz e comunicações do ProjetoAprovado, nos termos da LGPD. Posso pedir a exclusão a qualquer momento.</span>
+            </label>
+
+            <button type="submit" class="w-full bg-oxford-900 hover:bg-oxford-800 text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-3 text-base cursor-pointer group">
+              <span>Gerar Minha Matriz Lógica Grátis</span>
+              <span class="text-amber-400 group-hover:translate-x-1 transition-transform">➔</span>
+            </button>
+          </form>
+
+          <!-- Mensagem de Confirmação -->
+          <div id="successMessage" class="hidden mt-5 p-5 rounded-xl bg-emerald-50/90 border border-emerald-200 text-emerald-950 text-sm">
+            <div class="flex items-start gap-3">
+              <span class="text-lg">✓</span>
+              <div>
+                <p class="font-bold text-emerald-900 mb-1">Protocolo registrado com sucesso!</p>
+                <p class="text-emerald-800 leading-relaxed">Nosso motor metodológico já está cruzando o nível pretendido (<span id="resNivel" class="font-semibold"></span>) com a área de <span id="resArea" class="font-semibold"></span>. Você receberá sua Matriz de Amarração no contato informado em instantes.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensagem de Erro -->
+          <div id="errorMessage" class="hidden mt-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-sm" role="alert"></div>
+
+          <div class="mt-5 pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5">🔒 Sigilo acadêmico absoluto (LGPD)</span>
+            <span class="font-mono">Sem compromisso • 100% Gratuito</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção: Por que bancas reprovam projetos? -->
+  <section id="diferenciais" class="py-24 px-4 sm:px-6 max-w-6xl mx-auto">
+    <div class="max-w-3xl mx-auto text-center mb-16">
+      <span class="font-mono text-xs font-semibold uppercase tracking-widest text-brass-700 block mb-3">Diagnóstico de Banca</span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-oxford-900 mb-5 leading-tight">
+        Por que não usar o ChatGPT comum para escrever seu pré-projeto?
+      </h2>
+      <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+        Chats genéricos inventam referências bibliográficas, ignoram o limite rígido de páginas dos editais e produzem textos superficiais que professores doutores identificam no primeiro parágrafo.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Card 1 -->
+      <div class="bg-white p-8 rounded-2xl border border-stone-200/90 shadow-xs hover:border-oxford-900/30 hover:shadow-md transition group">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-12 h-12 rounded-xl bg-[#FAF9F6] border border-stone-200 text-oxford-900 flex items-center justify-center group-hover:bg-oxford-900 group-hover:text-amber-400 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <span class="font-mono text-xs text-slate-400">01 / EDITAL</span>
+        </div>
+        <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Leitor de Edital Inteligente</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Faça upload do PDF do edital do PPG. O sistema extrai automaticamente o limite exato de páginas, seções obrigatórias, tipografia e regras de avaliação cega (sem identificação do autor).
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-white p-8 rounded-2xl border border-stone-200/90 shadow-xs hover:border-oxford-900/30 hover:shadow-md transition group">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-12 h-12 rounded-xl bg-[#FAF9F6] border border-stone-200 text-oxford-900 flex items-center justify-center group-hover:bg-oxford-900 group-hover:text-amber-400 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          </div>
+          <span class="font-mono text-xs text-slate-400">02 / COERÊNCIA</span>
+        </div>
+        <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Matriz de Amarração Lógica</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Conectamos cada Objetivo Específico a uma técnica real de coleta e análise de dados (ex: Bardin, Estatística Descritiva), garantindo o rigor metodológico exigido pelas bancas.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-white p-8 rounded-2xl border border-stone-200/90 shadow-xs hover:border-oxford-900/30 hover:shadow-md transition group">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-12 h-12 rounded-xl bg-[#FAF9F6] border border-stone-200 text-oxford-900 flex items-center justify-center group-hover:bg-oxford-900 group-hover:text-amber-400 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <span class="font-mono text-xs text-slate-400">03 / FONTES REAIS</span>
+        </div>
+        <h3 class="font-serif font-bold text-xl text-oxford-900 mb-3">Zero Citações Inventadas</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Suba seus artigos em PDF (SciELO, CAPES, Scopus). A justificativa e o referencial são construídos exclusivamente sobre seus arquivos, indicando autor, ano e página exata.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção: Como Funciona (Passo a Passo) -->
+  <section id="como-funciona" class="py-24 px-4 sm:px-6 bg-oxford-900 text-white border-y border-oxford-800">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="font-mono text-xs font-semibold uppercase tracking-widest text-amber-400 block mb-3">Fluxo de Trabalho</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4 leading-tight">
+          Do tema bruto ao arquivo Word na ABNT em 4 etapas
+        </h2>
+        <p class="text-slate-400 text-base">
+          Um roteiro estruturado para você não perder semanas travado na página em branco.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Passo 01 -->
+        <div class="bg-oxford-800/60 border border-oxford-700/80 p-7 rounded-2xl hover:border-amber-500/40 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2.5 py-1 rounded">Etapa 01</span>
+            <span class="font-mono text-xs text-slate-500">~ 5 min</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-white mb-2">Configure o Edital do Programa</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Informe se é Mestrado (24m) ou Doutorado (48m) e anexe o edital do PPG para travar automaticamente o contador de páginas e a estrutura exigida.
+          </p>
+        </div>
+
+        <!-- Passo 02 -->
+        <div class="bg-oxford-800/60 border border-oxford-700/80 p-7 rounded-2xl hover:border-amber-500/40 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2.5 py-1 rounded">Etapa 02</span>
+            <span class="font-mono text-xs text-slate-500">~ 15 min</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-white mb-2">Trave a Matriz Metodológica</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Refine sua pergunta de pesquisa, hipótese e objetivos específicos com verbos da Taxonomia de Bloom adequados à exequibilidade do prazo.
+          </p>
+        </div>
+
+        <!-- Passo 03 -->
+        <div class="bg-oxford-800/60 border border-oxford-700/80 p-7 rounded-2xl hover:border-amber-500/40 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2.5 py-1 rounded">Etapa 03</span>
+            <span class="font-mono text-xs text-slate-500">Base em PDFs</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-white mb-2">Alimente o Referencial Teórico</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Anexe de 5 a 15 artigos-chave da linha de pesquisa do seu futuro orientador. O sistema sintetiza os achados com citações diretas e indiretas rastreáveis.
+          </p>
+        </div>
+
+        <!-- Passo 04 -->
+        <div class="bg-oxford-800/60 border border-oxford-700/80 p-7 rounded-2xl hover:border-amber-500/40 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2.5 py-1 rounded">Etapa 04</span>
+            <span class="font-mono text-xs text-slate-500">.DOCX ABNT</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-white mb-2">Exporte em Word Formatado</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Baixe seu pré-projeto completo com cronograma de execução (24 ou 48 meses), margens 3x2 cm, espaçamento 1,5 e lista de referências gerada automaticamente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção: Passes (Preços) -->
+  <section id="precos" class="py-24 px-4 sm:px-6 max-w-5xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="font-mono text-xs font-semibold uppercase tracking-widest text-brass-700 block mb-3">Sem Assinaturas Recorrentes</span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-oxford-900 mb-4">
+        Passes por Processo Seletivo
+      </h2>
+      <p class="text-slate-600 text-base">
+        Você não precisa pagar mensalidade eterna. Escolha o passe ideal para a sua submissão atual.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+      <!-- Plano Mestrado -->
+      <div class="bg-white rounded-2xl border border-stone-200 p-8 flex flex-col justify-between shadow-xs">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-semibold uppercase tracking-wider text-slate-500">Passe Individual</span>
+            <span class="text-xs font-medium bg-stone-100 text-slate-700 px-2.5 py-1 rounded-md">1 Projeto Completo</span>
+          </div>
+          <h3 class="font-serif text-2xl font-bold text-oxford-900 mb-2">Edital Único</h3>
+          <p class="text-sm text-slate-500 mb-6">Ideal para quem já definiu o programa de pós-graduação alvo.</p>
+          
+          <div class="mb-6 pb-6 border-b border-stone-100">
+            <span class="text-4xl font-bold text-oxford-900">R$ 97</span>
+            <span class="text-sm text-slate-500 ml-1">/ pagamento único</span>
+          </div>
+
+          <ul class="space-y-3.5 text-sm text-slate-700 mb-8">
+            <li class="flex items-center gap-2.5"><span class="text-emerald-600 font-bold">✓</span> Leitura de 1 Edital de PPG</li>
+            <li class="flex items-center gap-2.5"><span class="text-emerald-600 font-bold">✓</span> Matriz de Amarração Metodológica</li>
+            <li class="flex items-center gap-2.5"><span class="text-emerald-600 font-bold">✓</span> Análise de até 15 artigos em PDF</li>
+            <li class="flex items-center gap-2.5"><span class="text-emerald-600 font-bold">✓</span> Exportação .DOCX nas normas ABNT</li>
+          </ul>
+        </div>
+
+        <a href="#testar-gratis" class="w-full block text-center py-3 px-5 rounded-xl border border-oxford-900 text-oxford-900 font-semibold text-sm hover:bg-oxford-900 hover:text-white transition">
+          Começar Testando Grátis
+        </a>
+      </div>
+
+      <!-- Plano Múltiplos Editais -->
+      <div class="bg-oxford-900 text-white rounded-2xl border-2 border-amber-500/60 p-8 flex flex-col justify-between shadow-xl relative">
+        <div class="absolute -top-3.5 right-6 bg-amber-400 text-oxford-950 font-mono text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+          Mais Escolhido
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-semibold uppercase tracking-wider text-amber-400">Passe Pesquisador</span>
+            <span class="text-xs font-medium bg-oxford-800 text-slate-300 px-2.5 py-1 rounded-md border border-oxford-700">Até 3 Projetos</span>
+          </div>
+          <h3 class="font-serif text-2xl font-bold text-white mb-2">Múltiplos Editais</h3>
+          <p class="text-sm text-slate-400 mb-6">Adapte seu projeto para até 3 universidades ou linhas de pesquisa diferentes.</p>
+          
+          <div class="mb-6 pb-6 border-b border-oxford-800">
+            <span class="text-4xl font-bold text-white">R$ 167</span>
+            <span class="text-sm text-slate-400 ml-1">/ pagamento único (6 meses de acesso)</span>
+          </div>
+
+          <ul class="space-y-3.5 text-sm text-slate-200 mb-8">
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Leitura e adaptação para até 3 Editais</li>
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Matriz de Amarração + Cronograma CAPES</li>
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Análise de até 40 artigos em PDF</li>
+            <li class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Simulador de Arguição de Banca (Perguntas prováveis)</li>
+          </ul>
+        </div>
+
+        <a href="#testar-gratis" class="w-full block text-center py-3.5 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-oxford-950 font-bold text-sm transition shadow-md">
+          Gerar Espinha Dorsal Grátis Primeiro
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção: FAQ -->
+  <section id="faq" class="py-20 px-4 sm:px-6 max-w-3xl mx-auto border-t border-stone-200">
+    <div class="text-center mb-12">
+      <h2 class="font-serif text-3xl font-bold text-oxford-900 mb-3">Perguntas Frequentes</h2>
+      <p class="text-slate-600 text-sm">Esclarecimentos sobre ética acadêmica, plágio e funcionamento.</p>
+    </div>
+
+    <div class="space-y-4">
+      <details class="group bg-white border border-stone-200 rounded-xl p-5">
+        <summary class="flex items-center justify-between font-semibold text-oxford-900 cursor-pointer text-sm sm:text-base">
+          <span>O texto gerado passa em detectores de plágio e IA?</span>
+          <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
+          Sim. Diferente de geradores automáticos de texto genérico, o ProjetoAprovado atua como um estruturador metodológico assistido: você fornece os artigos-base, valida a matriz lógica e edita a redação final. Todas as citações são devidamente referenciadas conforme a NBR 10520, eliminando risco de plágio.
+        </p>
+      </details>
+
+      <details class="group bg-white border border-stone-200 rounded-xl p-5">
+        <summary class="flex items-center justify-between font-semibold text-oxford-900 cursor-pointer text-sm sm:text-base">
+          <span>Funciona para qualquer área do conhecimento (Direito, Saúde, Exatas, Humanas)?</span>
+          <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
+          Sim. Como o sistema aprende a terminologia técnica a partir do edital do seu programa e dos artigos em PDF que você mesmo carrega, ele se adapta perfeitamente a pesquisas qualitativas, quantitativas ou mistas em qualquer grande área da CAPES.
+        </p>
+      </details>
+
+      <details class="group bg-white border border-stone-200 rounded-xl p-5">
+        <summary class="flex items-center justify-between font-semibold text-oxford-900 cursor-pointer text-sm sm:text-base">
+          <span>O que exatamente eu recebo no teste gratuito acima?</span>
+          <span class="font-mono text-brass-700 group-open:rotate-45 transition-transform text-xl">+</span>
+        </summary>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-stone-100">
+          Ao preencher o formulário no topo da página, você recebe gratuitamente a estrutura lógica inicial do seu projeto: delimitação do problema, pergunta norteadora, objetivo geral e 3 objetivos específicos alinhados ao prazo de 24 (Mestrado) ou 48 meses (Doutorado).
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-oxford-950 text-slate-400 py-12 px-4 sm:px-6 border-t border-oxford-900">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded bg-oxford-900 text-amber-400 flex items-center justify-center font-serif font-bold text-lg border border-oxford-800">
+          §
+        </div>
+        <span class="font-serif font-bold text-lg text-white">
+          Projeto<span class="text-amber-400 italic">Aprovado</span>
+        </span>
+      </div>
+      <p class="text-xs text-slate-500 text-center sm:text-right">
+        © 2026 ProjetoAprovado • Ferramenta de apoio metodológico à pesquisa científica.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Script de Envio do Formulário (Supabase + Formspree) -->
+  <script>
+  {
+    // ====== CONFIGURAÇÃO — preencha com os dados das suas contas ======
+    const CONFIG = {
+      SUPABASE_URL: 'https://nomnxrazjypvulmtunjo.supabase.co',
+      SUPABASE_ANON_KEY: 'sb_publishable_ywC3iAIskK6wpTCMebZDxQ_sS67BSPL', // chave pública (publishable): só consegue INSERIR leads
+      FORMSPREE_ID: 'mppdnzvq'                         // https://formspree.io/f/mppdnzvq
+    };
+    // ==================================================================
+
+    const ok = v => v && !v.startsWith('COLE_AQUI');
+    const form = document.getElementById('leadForm');
+    const btn = form.querySelector('button[type="submit"]');
+    const btnOriginal = btn.innerHTML;
+    const errBox = document.getElementById('errorMessage');
+
+    function enviarSupabase(dados) {
+      if (!ok(CONFIG.SUPABASE_URL) || !ok(CONFIG.SUPABASE_ANON_KEY)) return Promise.reject(new Error('Supabase não configurado'));
+      return fetch(CONFIG.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/leads', {
+        method: 'POST',
+        headers: {
+          'apikey': CONFIG.SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(dados)
+      }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error('Supabase ' + r.status + ': ' + t); }); });
+    }
+
+    function enviarFormspree(dados, gotcha) {
+      if (!ok(CONFIG.FORMSPREE_ID)) return Promise.reject(new Error('Formspree não configurado'));
+      return fetch('https://formspree.io/f/' + CONFIG.FORMSPREE_ID, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...dados, _gotcha: gotcha, _subject: 'Novo lead ProjetoAprovado: ' + dados.nivel + ' / ' + dados.area })
+      }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error('Formspree ' + r.status + ': ' + t); }); });
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      errBox.classList.add('hidden');
+
+      const gotcha = form.elements['_gotcha'].value;
+      const dados = {
+        nivel: form.elements['nivel'].value,
+        area: form.elements['area'].value.trim(),
+        tema: form.elements['tema'].value.trim(),
+        contato: form.elements['contato'].value.trim(),
+        consentimento: form.elements['consentimento'].checked,
+        origem: location.href.slice(0, 300),
+        user_agent: navigator.userAgent.slice(0, 300)
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Estruturando Matriz Lógica...</span>';
+      btn.classList.add('opacity-80');
+
+      // Robô preencheu o campo oculto: finge sucesso e não grava nada
+      const resultados = gotcha
+        ? [{ status: 'fulfilled' }]
+        : await Promise.allSettled([enviarSupabase(dados), enviarFormspree(dados, gotcha)]);
+
+      resultados.filter(r => r.status === 'rejected').forEach(r => console.warn(r.reason));
+
+      if (resultados.some(r => r.status === 'fulfilled')) {
+        document.getElementById('resNivel').textContent = dados.nivel;
+        document.getElementById('resArea').textContent = dados.area;
+        document.getElementById('successMessage').classList.remove('hidden');
+        btn.innerHTML = '<span>✓ Matriz Solicitada</span>';
+        btn.classList.remove('bg-oxford-900', 'hover:bg-oxford-800', 'opacity-80');
+        btn.classList.add('bg-emerald-700');
+        form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+      } else {
+        errBox.textContent = 'Não foi possível registrar seu protocolo agora. Verifique sua conexão e tente novamente em instantes.';
+        errBox.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = btnOriginal;
+        btn.classList.remove('opacity-80');
+      }
+    });
+  }
+  </script>
+
+</body>
+</html>
